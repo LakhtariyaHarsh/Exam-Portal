@@ -16,10 +16,11 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-// app.use("/api/exams", require("./src/routes/examRoutes"));
-// app.use("/api/categories", require("./src/routes/categoryRoutes"));
-// app.use("/api/posts", require("./src/routes/postRoutes"));
-// app.use("/api/eligibilities", require("./src/routes/eligibilityRoutes"));
+app.use("/api/exams", require("./src/routes/examRoutes"));
+app.use("/api/categories", require("./src/routes/categoryRoutes"));
+app.use("/api/posts", require("./src/routes/postRoutes"));
+app.use("/api/eligibilities", require("./src/routes/eligibilityRoutes"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+ 
