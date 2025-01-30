@@ -3,12 +3,33 @@ const Exam = require("../models/Exam");
 // Get all exams
 exports.getExams = async (req, res) => {
     try {
-        const exams = await Exam.find().populate("examCategory postDetails eligibilityCriteria");
-        res.json(exams);
+        // Extract page & limit from query parameters
+        let { page, limit } = req.query;
+        page = parseInt(page) || 1;    // Default page 1
+        limit = parseInt(limit) || 10; // Default limit 10 per page
+        const skip = (page - 1) * limit;
+
+        // Fetch exams with pagination & populate references
+        const exams = await Exam.find()
+            .populate("examCategory postDetails eligibilityCriteria")
+            .skip(skip)
+            .limit(limit);
+
+        // Get total count of exams for frontend pagination
+        const totalExams = await Exam.countDocuments();
+
+        res.json({
+            page,
+            limit,
+            totalExams,
+            totalPages: Math.ceil(totalExams / limit),
+            exams
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 // Get single exam by ID
 exports.getExamById = async (req, res) => {

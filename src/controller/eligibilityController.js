@@ -1,14 +1,38 @@
 const Eligibility = require("../models/Eligibility");
 
-// Get all eligibility criteria
+/**
+ * @desc Get all eligibility criteria with pagination
+ * @route GET /api/eligibilities?page=1&limit=10
+ * @access Public
+ */
 exports.getEligibilities = async (req, res) => {
     try {
-        const eligibilities = await Eligibility.find();
-        res.json(eligibilities);
+        // Extract page & limit from query params
+        let { page, limit } = req.query;
+        page = parseInt(page) || 1;      // Default to page 1
+        limit = parseInt(limit) || 10;   // Default to 10 entries per page
+        const skip = (page - 1) * limit; // Calculate records to skip
+
+        // Fetch paginated eligibility criteria
+        const eligibilities = await Eligibility.find().skip(skip).limit(limit);
+
+        // Get total count of eligibility criteria
+        const totalEligibilities = await Eligibility.countDocuments();
+
+        // Send paginated response
+        res.status(200).json({
+            page,
+            limit,
+            totalEligibilities,
+            totalPages: Math.ceil(totalEligibilities / limit),
+            eligibilities
+        });
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 // Get eligibility by ID
 exports.getEligibilityById = async (req, res) => {

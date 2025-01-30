@@ -141,22 +141,38 @@ exports.updateUserProfile = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
-
 /**
- * @desc Get all users (Admin only)
- * @route GET /api/users
+ * @desc Get all users with pagination (Admin only)
+ * @route GET /api/users?page=1&limit=10
  * @access Private (Admin)
  */
 exports.getAllUsers = async (req, res) => {
     try {
         if (req.user.role !== "admin") return res.status(403).json({ message: "Access denied" });
 
-        const users = await User.find().select("-password");
-        res.status(200).json(users);
+        let { page, limit } = req.query;
+        page = parseInt(page) || 1;      // Default: Page 1
+        limit = parseInt(limit) || 10;   // Default: 10 users per page
+        const skip = (page - 1) * limit; // Calculate how many records to skip
+
+        // Fetch users with pagination
+        const users = await User.find().select("-password").skip(skip).limit(limit);
+
+        // Get total count of users (for frontend pagination)
+        const totalUsers = await User.countDocuments();
+
+        res.status(200).json({
+            page,
+            limit,
+            totalUsers,
+            totalPages: Math.ceil(totalUsers / limit),
+            users
+        });
     } catch (error) {
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
+
 
 /**
  * @desc Delete a user (Admin only)

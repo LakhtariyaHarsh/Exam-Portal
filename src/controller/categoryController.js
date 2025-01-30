@@ -1,10 +1,30 @@
 const Category = require("../models/category");
 
-// Get all categories
+/**
+ * @desc Get all categories with pagination
+ * @route GET /api/categories?page=1&limit=10
+ * @access Public
+ */
 exports.getCategories = async (req, res) => {
     try {
-        const categories = await Category.find();
-        res.json(categories);
+        let { page, limit } = req.query;
+        page = parseInt(page) || 1;      // Default to page 1
+        limit = parseInt(limit) || 10;   // Default to 10 categories per page
+        const skip = (page - 1) * limit; // Calculate how many records to skip
+
+        // Fetch categories with pagination
+        const categories = await Category.find().skip(skip).limit(limit);
+
+        // Get total count of categories (for frontend pagination)
+        const totalCategories = await Category.countDocuments();
+
+        res.status(200).json({
+            page,
+            limit,
+            totalCategories,
+            totalPages: Math.ceil(totalCategories / limit),
+            categories
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

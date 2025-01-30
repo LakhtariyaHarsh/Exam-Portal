@@ -1,14 +1,35 @@
 const Post = require("../models/Post");
 
-// Get all posts
+/**
+ * @desc Get all posts with pagination (10 posts per page)
+ * @route GET /api/posts?page=1
+ * @access Public
+ */
 exports.getPosts = async (req, res) => {
     try {
-        const posts = await Post.find();
-        res.json(posts);
+        let { page, limit } = req.query;
+        page = parseInt(page) || 1;      // Default: Page 1
+        limit = parseInt(limit) || 10;   // Default: 10 posts per page
+        const skip = (page - 1) * limit; // Calculate records to skip
+
+        // Fetch posts with pagination
+        const posts = await Post.find().skip(skip).limit(limit);
+
+        // Get total number of posts
+        const totalPosts = await Post.countDocuments();
+
+        res.status(200).json({
+            page,
+            limit,
+            totalPosts,
+            totalPages: Math.ceil(totalPosts / limit),
+            posts
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 // Get post by ID
 exports.getPostById = async (req, res) => {
