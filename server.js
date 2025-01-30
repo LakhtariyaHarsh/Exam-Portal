@@ -16,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+app.use("/api/users", require("./src/routes/userRoutes")); // User authentication
 app.use("/api/exams", require("./src/routes/examRoutes"));
 app.use("/api/categories", require("./src/routes/categoryRoutes"));
 app.use("/api/posts", require("./src/routes/postRoutes"));

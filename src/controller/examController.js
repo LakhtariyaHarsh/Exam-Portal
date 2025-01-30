@@ -22,7 +22,7 @@ exports.getExamById = async (req, res) => {
 };
 
 // Create a new exam
-exports.createExam = async (req, res) => {
+exports.createExam = async (req, res) => { 
     try {
         const newExam = new Exam(req.body);
         const savedExam = await newExam.save();
