@@ -1,6 +1,5 @@
 const Exam = require("../models/Exam");
 
-// Get all exams
 exports.getExams = async (req, res) => {
     try {
         // Extract page & limit from query parameters
@@ -9,9 +8,10 @@ exports.getExams = async (req, res) => {
         limit = parseInt(limit) || 10; // Default limit 10 per page
         const skip = (page - 1) * limit;
 
-        // Fetch exams with pagination & populate references
+        // Fetch exams with pagination, populate references, and sort by createdAt in descending order
         const exams = await Exam.find()
             .populate("examCategory postDetails eligibilityCriteria")
+            .sort({ createdAt: -1 })  // Sort by createdAt (newest first)
             .skip(skip)
             .limit(limit);
 
@@ -45,12 +45,12 @@ exports.getExamById = async (req, res) => {
 // Create a new exam
 exports.createExam = async (req, res) => { 
     try {
-        const newExam = new Exam(req.body);
-        const savedExam = await newExam.save();
-        res.status(201).json(savedExam);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+        const exams = req.body; // Expecting an array of exams [{ name: "UPSC CDS I 2025 Online Form" }]
+        const savedExams = await Exam.insertMany(exams);
+        res.status(201).json({ message: "Exams added successfully", exams: savedExams });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
 };
 
 // Update exam by ID

@@ -51,6 +51,6 @@ const ExamSchema = new mongoose.Schema({
     correctionInFormLink: String,
     correctiondateInForm: Date,
     jobPostingDate: Date
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Exam", ExamSchema);
