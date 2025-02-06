@@ -1,8 +1,8 @@
+import 'package:exam_portal/pages/contactus.dart';
+import 'package:exam_portal/pages/result.dart';
+import 'package:exam_portal/pages/search.dart';
+import 'package:exam_portal/pages/syllabus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/contactus.dart';
-import 'package:flutter_application_1/pages/result.dart';
-import 'package:flutter_application_1/pages/search.dart';
-import 'package:flutter_application_1/pages/syllabus.dart';
 import 'package:go_router/go_router.dart';
 import 'pages/admission.dart';
 import 'pages/admit.dart';
