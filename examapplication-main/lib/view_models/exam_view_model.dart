@@ -13,7 +13,7 @@ class ExamViewModel extends ChangeNotifier {
 
   bool isLoading = false;
   int page = 1;
-  int limit = 9;
+  int limit = 10;
   int totalPages = 1;
 
   ExamViewModel() {
@@ -44,7 +44,7 @@ class ExamViewModel extends ChangeNotifier {
   Future<void> fetchExamDataByLastdate() async {
     _setLoading(true);
     try {
-      var data = await _apiService.getExamsBylastDateToApply(page, limit);
+      var data = await _apiService.getExamsBylastDateToApply(page, 9);
       buttonData = data["exams"];
       totalPages = data["totalPages"];
     } catch (e) {
