@@ -84,16 +84,41 @@ class _MyPageState extends State<MyPage> {
 
   final ApiService _apiService = ApiService();
   List<String> examList = []; // Stores fetched exams
+  List<String> buttonData = []; // Stores fetched exams
+  List<String> admitCardExamList =
+      []; // Stores only exams with admit card available
+  List<String> resultExamList = []; // Stores only exams with result available
+  List<String> AnswerKeyExamList =
+      []; // Stores only exams with AnswerKey available
+  List<String> syllabusExamList =
+      []; // Stores only exams with syllabus available
   bool isLoading = true;
   bool isLoadingMore = false;
-  int page = 1;  // Current page
-  int limit = 10; // Exams per page
+  int page = 1; // Current page
+  int limit = 9; // Exams per page
   int totalPages = 1; // Total pages from API
+
+  final List<Color> buttonColors = [
+    Colors.lightGreen,
+    Colors.indigo,
+    Colors.orange[800]!,
+    Color(0xffaa183d),
+    Colors.deepOrange,
+    Colors.green[700]!,
+    Color(0xffff36ff),
+    Colors.blue,
+    Colors.grey,
+  ];
 
   @override
   void initState() {
     super.initState();
     fetchExams();
+    fetchExamDataByLastdate(); // Fetch only exams with Last date near
+    fetchExamsByAdmitCard(); // Fetch only exams with admit card available
+    fetchExamsByResult(); // Fetch only exams with result available
+    fetchExamsByAnswerKey(); // Fetch only exams with AnswerKey available
+    fetchExamsBySyllabus(); // Fetch only exams with syllabus available
   }
 
   // Fetch Exams with Pagination
@@ -113,10 +138,112 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
+// Fetch Exams with lastDateToApply
+  Future<void> fetchExamDataByLastdate() async {
+    try {
+      setState(() => isLoading = true);
+
+      // Fetch data from API
+      Map<String, dynamic> data =
+          await _apiService.getExamsBylastDateToApply(page, limit);
+
+      setState(() {
+        buttonData.addAll(data["exams"]); // Append filtered exams
+        totalPages = data["totalPages"]; // Get total pages
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+      print("Error fetching exams by admit card: $e");
+    }
+  }
+
+  // Fetch Exams where isadmitCardAvailable is true & sort by admitCardAvailable date
+  Future<void> fetchExamsByAdmitCard() async {
+    try {
+      setState(() => isLoading = true);
+
+      // Fetch data from API
+      Map<String, dynamic> data =
+          await _apiService.getExamsByAdmitCard(page, limit);
+
+      setState(() {
+        admitCardExamList.addAll(data["exams"]); // Append filtered exams
+        totalPages = data["totalPages"]; // Get total pages
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+      print("Error fetching exams by admit card: $e");
+    }
+  }
+
+  // Fetch Exams where isadmitCardAvailable is true & sort by admitCardAvailable date
+  Future<void> fetchExamsByResult() async {
+    try {
+      setState(() => isLoading = true);
+
+      // Fetch data from API
+      Map<String, dynamic> data =
+          await _apiService.getExamsByResult(page, limit);
+
+      setState(() {
+        resultExamList.addAll(data["exams"]); // Append filtered exams
+        totalPages = data["totalPages"]; // Get total pages
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+      print("Error fetching exams by result: $e");
+    }
+  }
+
+  // Fetch Exams where isAnswerKeyAvailable is true & sort by AnswerKeyAvailable date
+  Future<void> fetchExamsByAnswerKey() async {
+    try {
+      setState(() => isLoading = true);
+
+      // Fetch data from API
+      Map<String, dynamic> data =
+          await _apiService.getExamsByAnswerKey(page, limit);
+
+      setState(() {
+        AnswerKeyExamList.addAll(data["exams"]); // Append filtered exams
+        totalPages = data["totalPages"]; // Get total pages
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+      print("Error fetching exams by result: $e");
+    }
+  }
+
+  // Fetch Exams where isSyllabusAvailable is true & sort by SyllabusAvailable date
+  Future<void> fetchExamsBySyllabus() async {
+    try {
+      setState(() => isLoading = true);
+
+      // Fetch data from API
+      Map<String, dynamic> data =
+          await _apiService.getExamsBysyllabus(page, limit);
+
+      setState(() {
+        syllabusExamList.addAll(data["exams"]); // Append filtered exams
+        totalPages = data["totalPages"]; // Get total pages
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+      print("Error fetching exams by result: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
+    double buttonWidth = screenWidth * 0.25;
+    double buttonHeight = 80;
 
     bool isMobile = screenWidth < 600;
     bool isTablet = screenWidth >= 600 && screenWidth < 1024;
@@ -309,178 +436,48 @@ class _MyPageState extends State<MyPage> {
                         ],
                       ),
                     ),
-                  Container(
-                    width: screenWidth * 0.8,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: screenWidth * 0.02),
-                      child: Center(
-                        child: Wrap(
-                          spacing: 5,
-                          runSpacing: 10,
-                          children: [
-                            Container(
-                              width: screenWidth * 0.25,
-                              height: 80,
-                              color: Colors.lightGreen,
-                              child: Center(
-                                  child: TextButton(
+                  SizedBox(
+                    height: 30,
+                  ),
+                  isLoading
+                      ? CircularProgressIndicator()
+                      : Container(
+                          width: screenWidth * 0.8,
+                          child: Center(
+                            child: Wrap(
+                              spacing: 5,
+                              runSpacing: 10,
+                              children:
+                                  List.generate(buttonData.length, (index) {
+                                return Container(
+                                  width: buttonWidth,
+                                  height: buttonHeight,
+                                  decoration: BoxDecoration(
+                                    color: buttonColors[
+                                        index % buttonColors.length],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Center(
+                                    child: TextButton(
                                       onPressed: () {
                                         context.go('/details');
                                       },
                                       child: Text(
-                                        "SSC MTS 2024 Answer Key",
+                                        buttonData[index] as String,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: FontSize * 1.2,
-                                            fontWeight: FontWeight.bold),
-                                      ))),
-                            ),
-                            Container(
-                              width: screenWidth * 0.25,
-                              height: 80,
-                              color: Colors.indigo,
-                              child: Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    context.go('/details');
-                                  },
-                                  child: Text(
-                                    "Railway ALP Answer Key",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: FontSize * 1.2,
-                                        fontWeight: FontWeight.bold),
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
+                                );
+                              }),
                             ),
-                            Container(
-                              width: screenWidth * 0.25,
-                              height: 80,
-                              color: Colors.orange[800],
-                              child: Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    context.go('/details');
-                                  },
-                                  child: Text(
-                                    "UP Aganwadi 2024 Apply",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: FontSize * 1.2,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: screenWidth * 0.25,
-                              height: 80,
-                              color: const Color(0xffaa183d),
-                              child: Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    context.go('/details');
-                                  },
-                                  child: Text(
-                                    "UP Scholarship Apply",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: FontSize * 1.2,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: screenWidth * 0.25,
-                              height: 80,
-                              color: Colors.deepOrange,
-                              child: Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    context.go('/details');
-                                  },
-                                  child: Text(
-                                    "CTET Dec 2024 Admit Card",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: FontSize * 1.2,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: screenWidth * 0.25,
-                              height: 80,
-                              color: Colors.green[700],
-                              child: Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    context.go('/details');
-                                  },
-                                  child: Text(
-                                    "RRB Technician Exam ",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: FontSize * 1.2,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: screenWidth * 0.25,
-                              height: 80,
-                              color: const Color(0xffff36ff),
-                              child: Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    context.go('/details');
-                                  },
-                                  child: Text(
-                                    "UPPSC Pre 2024 Admit Card",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: FontSize * 1.2,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: screenWidth * 0.25,
-                              height: 80,
-                              color: Colors.blue,
-                              child: Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    context.go('/details');
-                                  },
-                                  child: Text(
-                                    "RPF Sub Inspector Admit Card",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: FontSize * 1.2,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
                   Container(
                     width: screenWidth * 0.8,
                     child: Padding(
@@ -514,29 +511,36 @@ class _MyPageState extends State<MyPage> {
                                           color: Colors.white),
                                     )),
                                   ),
-                                  ListView.builder(
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: resultData.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return Column(
-                                          children: [
-                                            ListTile(
-                                              leading: Icon(
-                                                Icons.circle,
-                                                size: FontSize * 0.6,
-                                              ),
-                                              title: Text(
-                                                resultData[index],
-                                                style: TextStyle(
-                                                    fontSize: FontSize * 0.9),
-                                              ),
-                                            )
-                                          ],
-                                        );
-                                      }),
+                                  isLoading
+                                      ? Center(
+                                          child:
+                                              CircularProgressIndicator()) // Show loader while fetching
+                                      : ListView.builder(
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: resultExamList.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return Column(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () =>
+                                                      {context.go('/details')},
+                                                  child: ListTile(
+                                                    leading: Icon(Icons.circle,
+                                                        size: FontSize * 0.6),
+                                                    title: Text(
+                                                        resultExamList[index],
+                                                        style: TextStyle(
+                                                            fontSize: FontSize *
+                                                                0.9)),
+                                                  ),
+                                                )
+                                              ],
+                                            );
+                                          },
+                                        ),
                                   Align(
                                     alignment: Alignment.bottomRight,
                                     child: TextButton(
@@ -578,29 +582,37 @@ class _MyPageState extends State<MyPage> {
                                           color: Colors.white),
                                     )),
                                   ),
-                                  ListView.builder(
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: admitCardData.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return Column(
-                                          children: [
-                                            ListTile(
-                                              leading: Icon(
-                                                Icons.circle,
-                                                size: FontSize * 0.6,
-                                              ),
-                                              title: Text(
-                                                admitCardData[index],
-                                                style: TextStyle(
-                                                    fontSize: FontSize * 0.9),
-                                              ),
-                                            )
-                                          ],
-                                        );
-                                      }),
+                                  isLoading
+                                      ? Center(
+                                          child:
+                                              CircularProgressIndicator()) // Show loader while fetching
+                                      : ListView.builder(
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: admitCardExamList.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return Column(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () =>
+                                                      {context.go('/details')},
+                                                  child: ListTile(
+                                                    leading: Icon(Icons.circle,
+                                                        size: FontSize * 0.6),
+                                                    title: Text(
+                                                        admitCardExamList[
+                                                            index],
+                                                        style: TextStyle(
+                                                            fontSize: FontSize *
+                                                                0.9)),
+                                                  ),
+                                                )
+                                              ],
+                                            );
+                                          },
+                                        ),
                                   Align(
                                     alignment: Alignment.bottomRight,
                                     child: TextButton(
@@ -654,13 +666,17 @@ class _MyPageState extends State<MyPage> {
                                               int index) {
                                             return Column(
                                               children: [
-                                                ListTile(
-                                                  leading: Icon(Icons.circle,
-                                                      size: FontSize * 0.6),
-                                                  title: Text(examList[index],
-                                                      style: TextStyle(
-                                                          fontSize:
-                                                              FontSize * 0.9)),
+                                                InkWell(
+                                                  onTap: () =>
+                                                      {context.go('/details')},
+                                                  child: ListTile(
+                                                    leading: Icon(Icons.circle,
+                                                        size: FontSize * 0.6),
+                                                    title: Text(examList[index],
+                                                        style: TextStyle(
+                                                            fontSize: FontSize *
+                                                                0.9)),
+                                                  ),
                                                 )
                                               ],
                                             );
@@ -706,29 +722,37 @@ class _MyPageState extends State<MyPage> {
                                           color: Colors.white),
                                     )),
                                   ),
-                                  ListView.builder(
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: answerKeyData.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return Column(
-                                          children: [
-                                            ListTile(
-                                              leading: Icon(
-                                                Icons.circle,
-                                                size: FontSize * 0.6,
-                                              ),
-                                              title: Text(
-                                                answerKeyData[index],
-                                                style: TextStyle(
-                                                    fontSize: FontSize * 0.9),
-                                              ),
-                                            )
-                                          ],
-                                        );
-                                      }),
+                                  isLoading
+                                      ? Center(
+                                          child:
+                                              CircularProgressIndicator()) // Show loader while fetching
+                                      : ListView.builder(
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: AnswerKeyExamList.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return Column(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () =>
+                                                      {context.go('/details')},
+                                                  child: ListTile(
+                                                    leading: Icon(Icons.circle,
+                                                        size: FontSize * 0.6),
+                                                    title: Text(
+                                                        AnswerKeyExamList[
+                                                            index],
+                                                        style: TextStyle(
+                                                            fontSize: FontSize *
+                                                                0.9)),
+                                                  ),
+                                                )
+                                              ],
+                                            );
+                                          },
+                                        ),
                                   Align(
                                     alignment: Alignment.bottomRight,
                                     child: TextButton(
@@ -769,29 +793,36 @@ class _MyPageState extends State<MyPage> {
                                           color: Colors.white),
                                     )),
                                   ),
-                                  ListView.builder(
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: syllabusData.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return Column(
-                                          children: [
-                                            ListTile(
-                                              leading: Icon(
-                                                Icons.circle,
-                                                size: FontSize * 0.6,
-                                              ),
-                                              title: Text(
-                                                syllabusData[index],
-                                                style: TextStyle(
-                                                    fontSize: FontSize * 0.9),
-                                              ),
-                                            )
-                                          ],
-                                        );
-                                      }),
+                                  isLoading
+                                      ? Center(
+                                          child:
+                                              CircularProgressIndicator()) // Show loader while fetching
+                                      : ListView.builder(
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: syllabusExamList.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return Column(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () =>
+                                                      {context.go('/details')},
+                                                  child: ListTile(
+                                                    leading: Icon(Icons.circle,
+                                                        size: FontSize * 0.6),
+                                                    title: Text(
+                                                        syllabusExamList[index],
+                                                        style: TextStyle(
+                                                            fontSize: FontSize *
+                                                                0.9)),
+                                                  ),
+                                                )
+                                              ],
+                                            );
+                                          },
+                                        ),
                                   Align(
                                     alignment: Alignment.bottomRight,
                                     child: TextButton(

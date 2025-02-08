@@ -31,8 +31,25 @@
 
   <title>exam_portal</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    .container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .indicator {
+      width: 15vw;
+      height: 15vw;
+    }
+  </style>
 </head>
-<body>
+<body style="overflow: hidden">
+  <div id="loading_indicator" class="container">
+    <img class="indicator" src="./assets/loading.gif" alt="Loading..."/>
+  </div>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

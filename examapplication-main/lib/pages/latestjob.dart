@@ -204,13 +204,18 @@ class _latestjobPageState extends State<latestjobPage> {
                                         }
                                         return Column(
                                           children: [
-                                            ListTile(
-                                              leading: Icon(Icons.circle,
-                                                  size: FontSize * 0.6),
-                                              title: Text(examList[index],
-                                                  style: TextStyle(
-                                                      fontSize:
-                                                          FontSize * 1.1)),
+                                            InkWell(
+                                              onTap: () => {
+                                                    context.go('/details')
+                                                  },
+                                              child: ListTile(
+                                                leading: Icon(Icons.circle,
+                                                    size: FontSize * 0.6),
+                                                title: Text(examList[index],
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            FontSize * 1.1)),
+                                              ),
                                             )
                                           ],
                                         );

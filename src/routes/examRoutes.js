@@ -4,6 +4,11 @@ const examController = require("../controller/examController");
 
 // Exam CRUD routes
 router.get("/", examController.getExams);
+router.get("/lastDateToApply", examController.getExamsBylastDateToApply);
+router.get("/admit-card", examController.getExamsByAdmitCard);
+router.get("/result", examController.getExamsByResult);
+router.get("/answerkey", examController.getExamsByanswerKey);
+router.get("/syllabus", examController.getExamsBysyllabus);
 router.get("/:id", examController.getExamById);
 router.post("/create", examController.createExam);
 router.put("/update/:id", examController.updateExam);
