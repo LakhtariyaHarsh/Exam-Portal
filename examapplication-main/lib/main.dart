@@ -2,11 +2,20 @@ import 'package:flutter/material.dart';
 import 'app_route.dart';
 import 'homepage.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:provider/provider.dart';
+import 'view_models/exam_view_model.dart';
 
 
 void main() {
   setUrlStrategy(PathUrlStrategy());
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ExamViewModel()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

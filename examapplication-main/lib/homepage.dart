@@ -1,6 +1,7 @@
-import 'package:exam_portal/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../view_models/exam_view_model.dart';
 
 class MyPage extends StatefulWidget {
   MyPage({super.key});
@@ -82,22 +83,6 @@ class _MyPageState extends State<MyPage> {
     "IIT JAM 2025 Online Form",
   ];
 
-  final ApiService _apiService = ApiService();
-  List<String> examList = []; // Stores fetched exams
-  List<String> buttonData = []; // Stores fetched exams
-  List<String> admitCardExamList =
-      []; // Stores only exams with admit card available
-  List<String> resultExamList = []; // Stores only exams with result available
-  List<String> AnswerKeyExamList =
-      []; // Stores only exams with AnswerKey available
-  List<String> syllabusExamList =
-      []; // Stores only exams with syllabus available
-  bool isLoading = true;
-  bool isLoadingMore = false;
-  int page = 1; // Current page
-  int limit = 9; // Exams per page
-  int totalPages = 1; // Total pages from API
-
   final List<Color> buttonColors = [
     Colors.lightGreen,
     Colors.indigo,
@@ -110,136 +95,137 @@ class _MyPageState extends State<MyPage> {
     Colors.grey,
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    fetchExams();
-    fetchExamDataByLastdate(); // Fetch only exams with Last date near
-    fetchExamsByAdmitCard(); // Fetch only exams with admit card available
-    fetchExamsByResult(); // Fetch only exams with result available
-    fetchExamsByAnswerKey(); // Fetch only exams with AnswerKey available
-    fetchExamsBySyllabus(); // Fetch only exams with syllabus available
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   fetchExams();
+  //   fetchExamDataByLastdate(); // Fetch only exams with Last date near
+  //   fetchExamsByAdmitCard(); // Fetch only exams with admit card available
+  //   fetchExamsByResult(); // Fetch only exams with result available
+  //   fetchExamsByAnswerKey(); // Fetch only exams with AnswerKey available
+  //   fetchExamsBySyllabus(); // Fetch only exams with syllabus available
+  // }
 
-  // Fetch Exams with Pagination
-  Future<void> fetchExams() async {
-    try {
-      setState(() => isLoading = true);
-      Map<String, dynamic> data = await _apiService.getExams(page, limit);
+//   // Fetch Exams with Pagination
+//   Future<void> fetchExams() async {
+//     try {
+//       setState(() => isLoading = true);
+//       Map<String, dynamic> data = await _apiService.getExams(page, limit);
 
-      setState(() {
-        examList.addAll(data["exams"]); // Append new exams
-        totalPages = data["totalPages"]; // Total pages from API
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() => isLoading = false);
-      print("Error fetching exams: $e");
-    }
-  }
+//       setState(() {
+//         examList.addAll(data["exams"]); // Append new exams
+//         totalPages = data["totalPages"]; // Total pages from API
+//         isLoading = false;
+//       });
+//     } catch (e) {
+//       setState(() => isLoading = false);
+//       print("Error fetching exams: $e");
+//     }
+//   }
 
-// Fetch Exams with lastDateToApply
-  Future<void> fetchExamDataByLastdate() async {
-    try {
-      setState(() => isLoading = true);
+// // Fetch Exams with lastDateToApply
+//   Future<void> fetchExamDataByLastdate() async {
+//     try {
+//       setState(() => isLoading = true);
 
-      // Fetch data from API
-      Map<String, dynamic> data =
-          await _apiService.getExamsBylastDateToApply(page, limit);
+//       // Fetch data from API
+//       Map<String, dynamic> data =
+//           await _apiService.getExamsBylastDateToApply(page, limit);
 
-      setState(() {
-        buttonData.addAll(data["exams"]); // Append filtered exams
-        totalPages = data["totalPages"]; // Get total pages
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() => isLoading = false);
-      print("Error fetching exams by admit card: $e");
-    }
-  }
+//       setState(() {
+//         buttonData.addAll(data["exams"]); // Append filtered exams
+//         totalPages = data["totalPages"]; // Get total pages
+//         isLoading = false;
+//       });
+//     } catch (e) {
+//       setState(() => isLoading = false);
+//       print("Error fetching exams by admit card: $e");
+//     }
+//   }
 
-  // Fetch Exams where isadmitCardAvailable is true & sort by admitCardAvailable date
-  Future<void> fetchExamsByAdmitCard() async {
-    try {
-      setState(() => isLoading = true);
+//   // Fetch Exams where isadmitCardAvailable is true & sort by admitCardAvailable date
+//   Future<void> fetchExamsByAdmitCard() async {
+//     try {
+//       setState(() => isLoading = true);
 
-      // Fetch data from API
-      Map<String, dynamic> data =
-          await _apiService.getExamsByAdmitCard(page, limit);
+//       // Fetch data from API
+//       Map<String, dynamic> data =
+//           await _apiService.getExamsByAdmitCard(page, limit);
 
-      setState(() {
-        admitCardExamList.addAll(data["exams"]); // Append filtered exams
-        totalPages = data["totalPages"]; // Get total pages
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() => isLoading = false);
-      print("Error fetching exams by admit card: $e");
-    }
-  }
+//       setState(() {
+//         admitCardExamList.addAll(data["exams"]); // Append filtered exams
+//         totalPages = data["totalPages"]; // Get total pages
+//         isLoading = false;
+//       });
+//     } catch (e) {
+//       setState(() => isLoading = false);
+//       print("Error fetching exams by admit card: $e");
+//     }
+//   }
 
-  // Fetch Exams where isadmitCardAvailable is true & sort by admitCardAvailable date
-  Future<void> fetchExamsByResult() async {
-    try {
-      setState(() => isLoading = true);
+//   // Fetch Exams where isadmitCardAvailable is true & sort by admitCardAvailable date
+//   Future<void> fetchExamsByResult() async {
+//     try {
+//       setState(() => isLoading = true);
 
-      // Fetch data from API
-      Map<String, dynamic> data =
-          await _apiService.getExamsByResult(page, limit);
+//       // Fetch data from API
+//       Map<String, dynamic> data =
+//           await _apiService.getExamsByResult(page, limit);
 
-      setState(() {
-        resultExamList.addAll(data["exams"]); // Append filtered exams
-        totalPages = data["totalPages"]; // Get total pages
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() => isLoading = false);
-      print("Error fetching exams by result: $e");
-    }
-  }
+//       setState(() {
+//         resultExamList.addAll(data["exams"]); // Append filtered exams
+//         totalPages = data["totalPages"]; // Get total pages
+//         isLoading = false;
+//       });
+//     } catch (e) {
+//       setState(() => isLoading = false);
+//       print("Error fetching exams by result: $e");
+//     }
+//   }
 
-  // Fetch Exams where isAnswerKeyAvailable is true & sort by AnswerKeyAvailable date
-  Future<void> fetchExamsByAnswerKey() async {
-    try {
-      setState(() => isLoading = true);
+//   // Fetch Exams where isAnswerKeyAvailable is true & sort by AnswerKeyAvailable date
+//   Future<void> fetchExamsByAnswerKey() async {
+//     try {
+//       setState(() => isLoading = true);
 
-      // Fetch data from API
-      Map<String, dynamic> data =
-          await _apiService.getExamsByAnswerKey(page, limit);
+//       // Fetch data from API
+//       Map<String, dynamic> data =
+//           await _apiService.getExamsByAnswerKey(page, limit);
 
-      setState(() {
-        AnswerKeyExamList.addAll(data["exams"]); // Append filtered exams
-        totalPages = data["totalPages"]; // Get total pages
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() => isLoading = false);
-      print("Error fetching exams by result: $e");
-    }
-  }
+//       setState(() {
+//         AnswerKeyExamList.addAll(data["exams"]); // Append filtered exams
+//         totalPages = data["totalPages"]; // Get total pages
+//         isLoading = false;
+//       });
+//     } catch (e) {
+//       setState(() => isLoading = false);
+//       print("Error fetching exams by result: $e");
+//     }
+//   }
 
-  // Fetch Exams where isSyllabusAvailable is true & sort by SyllabusAvailable date
-  Future<void> fetchExamsBySyllabus() async {
-    try {
-      setState(() => isLoading = true);
+//   // Fetch Exams where isSyllabusAvailable is true & sort by SyllabusAvailable date
+//   Future<void> fetchExamsBySyllabus() async {
+//     try {
+//       setState(() => isLoading = true);
 
-      // Fetch data from API
-      Map<String, dynamic> data =
-          await _apiService.getExamsBysyllabus(page, limit);
+//       // Fetch data from API
+//       Map<String, dynamic> data =
+//           await _apiService.getExamsBysyllabus(page, limit);
 
-      setState(() {
-        syllabusExamList.addAll(data["exams"]); // Append filtered exams
-        totalPages = data["totalPages"]; // Get total pages
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() => isLoading = false);
-      print("Error fetching exams by result: $e");
-    }
-  }
+//       setState(() {
+//         syllabusExamList.addAll(data["exams"]); // Append filtered exams
+//         totalPages = data["totalPages"]; // Get total pages
+//         isLoading = false;
+//       });
+//     } catch (e) {
+//       setState(() => isLoading = false);
+//       print("Error fetching exams by result: $e");
+//     }
+//   }
 
   @override
   Widget build(BuildContext context) {
+    final examViewModel = Provider.of<ExamViewModel>(context);
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
     double buttonWidth = screenWidth * 0.25;
@@ -439,16 +425,16 @@ class _MyPageState extends State<MyPage> {
                   SizedBox(
                     height: 30,
                   ),
-                  isLoading
-                      ? CircularProgressIndicator()
+                  examViewModel.isLoading
+                      ? Center(child: CircularProgressIndicator())
                       : Container(
                           width: screenWidth * 0.8,
                           child: Center(
                             child: Wrap(
                               spacing: 5,
                               runSpacing: 10,
-                              children:
-                                  List.generate(buttonData.length, (index) {
+                              children: List.generate(
+                                  examViewModel.buttonData.length, (index) {
                                 return Container(
                                   width: buttonWidth,
                                   height: buttonHeight,
@@ -463,7 +449,7 @@ class _MyPageState extends State<MyPage> {
                                         context.go('/details');
                                       },
                                       child: Text(
-                                        buttonData[index] as String,
+                                        examViewModel.buttonData[index],
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: Colors.white,
@@ -487,421 +473,24 @@ class _MyPageState extends State<MyPage> {
                           spacing: 20,
                           runSpacing: 10,
                           children: [
-                            Container(
-                              width: 300,
-                              decoration: const BoxDecoration(
-                                  border: Border(
-                                      right: BorderSide(),
-                                      left: BorderSide(),
-                                      top: BorderSide(),
-                                      bottom: BorderSide())),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: screenHeight * 0.06,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xffaa183d),
-                                    ),
-                                    child: Center(
-                                        child: Text(
-                                      "Result",
-                                      style: TextStyle(
-                                          fontSize: FontSize * 1.2,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    )),
-                                  ),
-                                  isLoading
-                                      ? Center(
-                                          child:
-                                              CircularProgressIndicator()) // Show loader while fetching
-                                      : ListView.builder(
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          itemCount: resultExamList.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return Column(
-                                              children: [
-                                                InkWell(
-                                                  onTap: () =>
-                                                      {context.go('/details')},
-                                                  child: ListTile(
-                                                    leading: Icon(Icons.circle,
-                                                        size: FontSize * 0.6),
-                                                    title: Text(
-                                                        resultExamList[index],
-                                                        style: TextStyle(
-                                                            fontSize: FontSize *
-                                                                0.9)),
-                                                  ),
-                                                )
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                  Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: TextButton(
-                                        onPressed: () {
-                                          context.go('/result');
-                                          // GoRouter.of(context).pushNamed(AppRouteConstant.resultRouteName);
-                                        },
-                                        child: Text(
-                                          "View More",
-                                          style: TextStyle(
-                                              fontSize: FontSize,
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: 300,
-                              decoration: const BoxDecoration(
-                                  border: Border(
-                                      right: BorderSide(),
-                                      left: BorderSide(),
-                                      top: BorderSide(),
-                                      bottom: BorderSide())),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: screenHeight * 0.06,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xffaa183d),
-                                    ),
-                                    child: Center(
-                                        child: Text(
-                                      "Admit Card",
-                                      style: TextStyle(
-                                          fontSize: FontSize * 1.2,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    )),
-                                  ),
-                                  isLoading
-                                      ? Center(
-                                          child:
-                                              CircularProgressIndicator()) // Show loader while fetching
-                                      : ListView.builder(
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          itemCount: admitCardExamList.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return Column(
-                                              children: [
-                                                InkWell(
-                                                  onTap: () =>
-                                                      {context.go('/details')},
-                                                  child: ListTile(
-                                                    leading: Icon(Icons.circle,
-                                                        size: FontSize * 0.6),
-                                                    title: Text(
-                                                        admitCardExamList[
-                                                            index],
-                                                        style: TextStyle(
-                                                            fontSize: FontSize *
-                                                                0.9)),
-                                                  ),
-                                                )
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                  Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: TextButton(
-                                        onPressed: () {
-                                          context.go('/admitcard');
-                                        },
-                                        child: Text(
-                                          "View More",
-                                          style: TextStyle(
-                                              fontSize: FontSize,
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: 300,
-                              decoration: const BoxDecoration(
-                                  border: Border(
-                                      right: BorderSide(),
-                                      left: BorderSide(),
-                                      top: BorderSide(),
-                                      bottom: BorderSide())),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: screenHeight * 0.06,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xffaa183d),
-                                    ),
-                                    child: Center(
-                                        child: Text(
-                                      "Latest Jobs",
-                                      style: TextStyle(
-                                          fontSize: FontSize * 1.2,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    )),
-                                  ),
-                                  isLoading
-                                      ? Center(
-                                          child:
-                                              CircularProgressIndicator()) // Show loader while fetching
-                                      : ListView.builder(
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          itemCount: examList.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return Column(
-                                              children: [
-                                                InkWell(
-                                                  onTap: () =>
-                                                      {context.go('/details')},
-                                                  child: ListTile(
-                                                    leading: Icon(Icons.circle,
-                                                        size: FontSize * 0.6),
-                                                    title: Text(examList[index],
-                                                        style: TextStyle(
-                                                            fontSize: FontSize *
-                                                                0.9)),
-                                                  ),
-                                                )
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                  Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: TextButton(
-                                        onPressed: () {
-                                          context.go('/latestjob');
-                                        },
-                                        child: Text(
-                                          "View More",
-                                          style: TextStyle(
-                                              fontSize: FontSize,
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: 300,
-                              decoration: const BoxDecoration(
-                                  border: Border(
-                                      right: BorderSide(),
-                                      left: BorderSide(),
-                                      top: BorderSide(),
-                                      bottom: BorderSide())),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: screenHeight * 0.06,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xffaa183d),
-                                    ),
-                                    child: Center(
-                                        child: Text(
-                                      "Answer Key",
-                                      style: TextStyle(
-                                          fontSize: FontSize * 1.2,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    )),
-                                  ),
-                                  isLoading
-                                      ? Center(
-                                          child:
-                                              CircularProgressIndicator()) // Show loader while fetching
-                                      : ListView.builder(
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          itemCount: AnswerKeyExamList.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return Column(
-                                              children: [
-                                                InkWell(
-                                                  onTap: () =>
-                                                      {context.go('/details')},
-                                                  child: ListTile(
-                                                    leading: Icon(Icons.circle,
-                                                        size: FontSize * 0.6),
-                                                    title: Text(
-                                                        AnswerKeyExamList[
-                                                            index],
-                                                        style: TextStyle(
-                                                            fontSize: FontSize *
-                                                                0.9)),
-                                                  ),
-                                                )
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                  Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: TextButton(
-                                        onPressed: () {
-                                          context.go('/answerkey');
-                                        },
-                                        child: Text(
-                                          "View More",
-                                          style: TextStyle(
-                                              fontSize: FontSize,
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: 300,
-                              decoration: const BoxDecoration(
-                                  border: Border(
-                                      right: BorderSide(),
-                                      left: BorderSide(),
-                                      top: BorderSide(),
-                                      bottom: BorderSide())),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: screenHeight * 0.06,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xffaa183d),
-                                    ),
-                                    child: Center(
-                                        child: Text(
-                                      "Syllabus",
-                                      style: TextStyle(
-                                          fontSize: FontSize * 1.2,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    )),
-                                  ),
-                                  isLoading
-                                      ? Center(
-                                          child:
-                                              CircularProgressIndicator()) // Show loader while fetching
-                                      : ListView.builder(
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          itemCount: syllabusExamList.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return Column(
-                                              children: [
-                                                InkWell(
-                                                  onTap: () =>
-                                                      {context.go('/details')},
-                                                  child: ListTile(
-                                                    leading: Icon(Icons.circle,
-                                                        size: FontSize * 0.6),
-                                                    title: Text(
-                                                        syllabusExamList[index],
-                                                        style: TextStyle(
-                                                            fontSize: FontSize *
-                                                                0.9)),
-                                                  ),
-                                                )
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                  Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: TextButton(
-                                        onPressed: () {
-                                          context.go('/syllabus');
-                                        },
-                                        child: Text(
-                                          "View More",
-                                          style: TextStyle(
-                                              fontSize: FontSize,
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: 300,
-                              decoration: const BoxDecoration(
-                                  border: Border(
-                                      right: BorderSide(),
-                                      left: BorderSide(),
-                                      top: BorderSide(),
-                                      bottom: BorderSide())),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: screenHeight * 0.06,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xffaa183d),
-                                    ),
-                                    child: Center(
-                                        child: Text(
-                                      "Admission",
-                                      style: TextStyle(
-                                          fontSize: FontSize * 1.2,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    )),
-                                  ),
-                                  ListView.builder(
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: admissionData.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return Column(
-                                          children: [
-                                            ListTile(
-                                              leading: Icon(
-                                                Icons.circle,
-                                                size: FontSize * 0.6,
-                                              ),
-                                              title: Text(
-                                                admissionData[index],
-                                                style: TextStyle(
-                                                    fontSize: FontSize * 0.9),
-                                              ),
-                                            )
-                                          ],
-                                        );
-                                      }),
-                                  Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: TextButton(
-                                        onPressed: () {
-                                          context.go('/admission');
-                                        },
-                                        child: Text(
-                                          "View More",
-                                          style: TextStyle(
-                                              fontSize: FontSize,
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
+                            ExamSection(
+                                title: "Result",
+                                exams: examViewModel.resultExamList),
+                            ExamSection(
+                                title: "Admit Card",
+                                exams: examViewModel.admitCardExamList),
+                            ExamSection(
+                                title: "Latest Jobs",
+                                exams: examViewModel.examList),
+                            ExamSection(
+                                title: "Answer Key",
+                                exams: examViewModel.answerKeyExamList),
+                            ExamSection(
+                                title: "Syllabus",
+                                exams: examViewModel.syllabusExamList),
+                            ExamSection(
+                                title: "Admission",
+                                exams: admissionData),
                           ],
                         ),
                       ),
@@ -910,6 +499,60 @@ class _MyPageState extends State<MyPage> {
                 ],
               ),
             )),
+      ),
+    );
+  }
+}
+
+class ExamSection extends StatelessWidget {
+  final String title;
+  final List<String> exams;
+
+  ExamSection({required this.title, required this.exams});
+
+  @override
+  Widget build(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    return Container(
+      width: 300,
+      decoration: BoxDecoration(border: Border.all()),
+      child: Column(
+        children: [
+          Container(
+            height: screenHeight * 0.06,
+            color: Color(0xffaa183d),
+            child: Center(
+              child: Text(title,
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
+            ),
+          ),
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: exams.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Icon(Icons.circle, size: 10),
+                title: Text(exams[index], style: TextStyle(fontSize: 14)),
+                onTap: () => context.go('/details'),
+              );
+            },
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: TextButton(
+              onPressed: () {
+                context.go('/${title.toLowerCase().replaceAll(" ", "")}');
+              },
+              child: Text("View More",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
       ),
     );
   }
