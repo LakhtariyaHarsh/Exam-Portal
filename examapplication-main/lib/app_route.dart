@@ -29,65 +29,72 @@ import 'pages/latestjob.dart';
         ),
         GoRoute(
             name: 'details',
-            path: '/details',
+            path: '/details/:examId',
             pageBuilder: (context, state){
-              return MaterialPage(child: jobDetails());
+              final examId = Uri.decodeComponent(state.pathParameters['examId']!);
+              return MaterialPage(child: jobDetails(examId: examId));
             }
         ),
         GoRoute(
             name: 'resultdetails',
-            path: '/result/details',
+            path: '/result/details/:examId',
             pageBuilder: (context, state){
-              return MaterialPage(child: jobDetails());
+              final examId = Uri.decodeComponent(state.pathParameters['examId']!);
+              return MaterialPage(child: jobDetails(examId: examId));
             }
         ),
         GoRoute(
             name: 'latestjobdetails',
-            path: '/latestjob/examname',
+            path: '/latestjob/examname/:examId',
             pageBuilder: (context, state){
-              return MaterialPage(child: jobDetails());
+              final examId = Uri.decodeComponent(state.pathParameters['examId']!);
+              return MaterialPage(child: jobDetails(examId: examId));
             }
         ),
         GoRoute(
             name: 'admitcarddetails',
-            path: '/admitcard/examname',
+            path: '/admitcard/examname/:examId',
             pageBuilder: (context, state){
-              return MaterialPage(child: jobDetails());
+              final examId = Uri.decodeComponent(state.pathParameters['examId']!);
+              return MaterialPage(child: jobDetails(examId: examId));
             }
         ),
         GoRoute(
             name: 'answerkeydetails',
-            path: '/answerkey/examname',
+            path: '/answerkey/examname/:examId',
             pageBuilder: (context, state){
-              return MaterialPage(child: jobDetails());
+              final examId = Uri.decodeComponent(state.pathParameters['examId']!);
+              return MaterialPage(child: jobDetails(examId: examId));
             }
         ),
         GoRoute(
             name: 'syllabusdetails',
-            path: '/syllabus/examname',
+            path: '/syllabus/examname/:examId',
             pageBuilder: (context, state){
-              return MaterialPage(child: jobDetails());
+              final examId = Uri.decodeComponent(state.pathParameters['examId']!);
+              return MaterialPage(child: jobDetails(examId: examId));
             }
         ),
         GoRoute(
             name: 'admissiondetails',
-            path: '/admission/examname',
+            path: '/admission/examname/:examId',
             pageBuilder: (context, state){
-              return MaterialPage(child: jobDetails());
+              final examId = Uri.decodeComponent(state.pathParameters['examId']!);
+              return MaterialPage(child: jobDetails(examId: examId));
             }
         ),
         GoRoute(
             name: 'latestjob',
             path: '/latestjob',
             pageBuilder: (context, state){
-              return MaterialPage(child: latestjobPage());
+              return MaterialPage(child: LatestJobPage());
             }
         ),
         GoRoute(
             name: 'admitcard',
             path: '/admitcard',
             pageBuilder: (context, state){
-              return MaterialPage(child: admitCardPage());
+              return MaterialPage(child: AdmitPage());
             }
         ),
         GoRoute(
@@ -108,14 +115,14 @@ import 'pages/latestjob.dart';
             name: 'answerkey',
             path: '/answerkey',
             pageBuilder: (context, state){
-              return MaterialPage(child: answerKeyPage());
+              return MaterialPage(child: AnswerKeyPage());
             }
         ),
         GoRoute(
             name: 'syllabus',
             path: '/syllabus',
             pageBuilder: (context, state){
-              return MaterialPage(child: syllabusPage());
+              return MaterialPage(child: SyllabusPage());
             }
         ),
         GoRoute(

@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiService {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://localhost:5000/api",
+      baseUrl: "http://localhost:4000/api",
       connectTimeout: Duration(seconds: 10),
       receiveTimeout: Duration(seconds: 10),
     ),
@@ -20,6 +20,15 @@ class ApiService {
     return _dio;
   }
 
+  // Handle API Response
+  Map<String, dynamic> _handleResponse(Response response) {
+    if (response.statusCode == 200) {
+      return response.data;
+    } else {
+      throw Exception("Failed to load data: ${response.statusMessage}");
+    }
+  }
+
   // Login API Call
   Future<Response> login(String email, String password) async {
     try {
@@ -27,7 +36,8 @@ class ApiService {
           .post("/users/login", data: {"email": email, "password": password});
       return response;
     } catch (e) {
-      throw Exception("Login failed");
+      print("Login Error: $e");
+      throw Exception("Login failed: $e");
     }
   }
 
@@ -38,199 +48,121 @@ class ApiService {
           data: {"name": name, "email": email, "password": password});
       return response;
     } catch (e) {
-      throw Exception("Registration failed");
+      print("Registration Error: $e");
+      throw Exception("Registration failed: $e");
     }
   }
 
   // Fetch Categories
-  Future<List<dynamic>> getCategories() async {
-    Response response = await _dio.get("/categories");
-    return response.data;
+  Future<Map<String, dynamic>> getCategories() async {
+    try {
+      Response response = await _dio.get("/categories");
+      return _handleResponse(response);
+    } catch (e) {
+      print("Get Categories Error: $e");
+      throw Exception("Failed to load categories: $e");
+    }
   }
 
   // Fetch Exams with Pagination
   Future<Map<String, dynamic>> getExams(int page, int limit) async {
-    try {
-      Response response = await _dio.get("/exams", queryParameters: {
-        "page": page,
-        "limit": limit,
-      });
-
-      if (response.statusCode == 200) {
-        print("API Response: ${response.data}");
-
-        return {
-          "exams": (response.data["exams"] as List)
-              .map((exam) => exam['name'].toString())
-              .toList(),
-          "totalPages": response.data["totalPages"]
-        };
-      } else {
-        throw Exception("Failed to load exams");
-      }
-    } catch (e) {
-      throw Exception("Error: $e");
-    }
+    return _fetchExams("/exams", page, limit);
   }
 
   // Fetch exams with last date for available form (sorted by lastDateToApply)
-  Future<Map<String, dynamic>> getExamsBylastDateToApply(int page, int limit) async {
-    try {
-      Response response = await _dio.get(
-        "/exams/lastDateToApply",
-        queryParameters: {
-          "page": page,
-          "limit": limit,
-          "sort": "lastDateToApply" // Sort by lastDateToApply date
-        },
-      );
-
-      if (response.statusCode == 200) {
-        print("API Response: ${response.data}");
-
-        return {
-          "exams": (response.data["exams"] as List)
-              .map((exam) => exam['name'].toString())
-              .toList(),
-          "totalPages": response.data["totalPages"]
-        };
-      } else {
-        throw Exception("Failed to load exams");
-      }
-    } catch (e) {
-      throw Exception("Error: $e");
-    }
+  Future<Map<String, dynamic>> getExamsByLastDateToApply(
+      int page, int limit) async {
+    return _fetchExams(
+        "/exams/lastDateToApply", page, limit, {"sort": "lastDateToApply"});
   }
 
   // Fetch exams with admit card available (sorted by admitCardAvailable date)
   Future<Map<String, dynamic>> getExamsByAdmitCard(int page, int limit) async {
-    try {
-      Response response = await _dio.get(
-        "/exams/admit-card",
-        queryParameters: {
-          "page": page,
-          "limit": limit,
-          "isadmitCardAvailable": true,
-          "sort": "admitCardAvailable" // Sort by admitCardAvailable date
-        },
-      );
-
-      if (response.statusCode == 200) {
-        print("API Response: ${response.data}");
-
-        return {
-          "exams": (response.data["exams"] as List)
-              .map((exam) => exam['name'].toString())
-              .toList(),
-          "totalPages": response.data["totalPages"]
-        };
-      } else {
-        throw Exception("Failed to load exams");
-      }
-    } catch (e) {
-      throw Exception("Error: $e");
-    }
+    return _fetchExams("/exams/admit-card", page, limit,
+        {"isadmitCardAvailable": true, "sort": "admitCardAvailable"});
   }
 
-    // Fetch exams with admit card available (sorted by resultAvailable date)
+  // Fetch exams with result available (sorted by resultPostingDate)
   Future<Map<String, dynamic>> getExamsByResult(int page, int limit) async {
-    try {
-      Response response = await _dio.get(
-        "/exams/result",
-        queryParameters: {
-          "page": page,
-          "limit": limit,
-          "resultAvailable": true,
-          "sort": "resultPostingDate" // Sort by resultAvailable date
-        },
-      );
-
-      if (response.statusCode == 200) {
-        print("API Response: ${response.data}");
-
-        return {
-          "exams": (response.data["exams"] as List)
-              .map((exam) => exam['name'].toString())
-              .toList(),
-          "totalPages": response.data["totalPages"]
-        };
-      } else {
-        throw Exception("Failed to load exams");
-      }
-    } catch (e) {
-      throw Exception("Error: $e");
-    }
+    return _fetchExams("/exams/result", page, limit,
+        {"resultAvailable": true, "sort": "resultPostingDate"});
   }
 
-    // Fetch exams with syllabus available (sorted by syllabusAvailable date)
-  Future<Map<String, dynamic>> getExamsBysyllabus(int page, int limit) async {
-    try {
-      Response response = await _dio.get(
-        "/exams/syllabus",
-        queryParameters: {
-          "page": page,
-          "limit": limit,
-          "syllabusAvailable": true,
-          "sort": "syllabusAvailableDate" // Sort by syllabusAvailable date
-        },
-      );
-
-      if (response.statusCode == 200) {
-        print("API Response: ${response.data}");
-
-        return {
-          "exams": (response.data["exams"] as List)
-              .map((exam) => exam['name'].toString())
-              .toList(),
-          "totalPages": response.data["totalPages"]
-        };
-      } else {
-        throw Exception("Failed to load exams");
-      }
-    } catch (e) {
-      throw Exception("Error: $e");
-    }
+  // Fetch exams with syllabus available (sorted by syllabusAvailableDate)
+  Future<Map<String, dynamic>> getExamsBySyllabus(int page, int limit) async {
+    return _fetchExams("/exams/syllabus", page, limit,
+        {"syllabusAvailable": true, "sort": "syllabusAvailableDate"});
   }
 
-    // Fetch exams with AnswerKey available (sorted by resultAvailable date)
+  // Fetch exams with answer key available (sorted by answerKeyAvailable date)
   Future<Map<String, dynamic>> getExamsByAnswerKey(int page, int limit) async {
+    return _fetchExams("/exams/answerkey", page, limit,
+        {"isanswerKeyAvailable": true, "sort": "answerKeyAvailable"});
+  }
+
+ // Fetch Exams Helper Method (Returns Full Exam Data)
+Future<Map<String, dynamic>> _fetchExams(String endpoint, int page, int limit,
+    [Map<String, dynamic>? additionalParams]) async {
+  try {
+    Map<String, dynamic> queryParams = {"page": page, "limit": limit};
+    if (additionalParams != null) {
+      queryParams.addAll(additionalParams);
+    }
+
+    Response response =
+        await _dio.get(endpoint, queryParameters: queryParams);
+    
+    return {
+      "exams": List<Map<String, dynamic>>.from(response.data["exams"]), // Ensure correct type
+      "totalPages": response.data["totalPages"]
+    };
+  } catch (e) {
+    print("Fetch Exams Error: $e");
+    throw Exception("Failed to load exams: $e");
+  }
+}
+
+  // Fetch a single exam by ID
+  Future<Map<String, dynamic>> getExamById(String examId) async {
     try {
-      Response response = await _dio.get(
-        "/exams/answerkey",
-        queryParameters: {
-          "page": page,
-          "limit": limit,
-          "isanswerKeyAvailable": true,
-          "sort": "answerKeyAvailable" // Sort by resultAvailable date
-        },
-      );
-
-      if (response.statusCode == 200) {
-        print("API Response: ${response.data}");
-
-        return {
-          "exams": (response.data["exams"] as List)
-              .map((exam) => exam['name'].toString())
-              .toList(),
-          "totalPages": response.data["totalPages"]
-        };
-      } else {
-        throw Exception("Failed to load exams");
-      }
+      Response response = await _dio.get("/exams/$examId");
+      return _handleResponse(response);
     } catch (e) {
-      throw Exception("Error: $e");
+      print("Fetch Exam by ID Error: $e");
+      throw Exception("Failed to load exam details: $e");
+    }
+  }
+
+  // Fetch all exam IDs
+  Future<List<String>> getExamIds() async {
+    try {
+      Response response = await _dio.get("/exams");
+      return (response.data as List).map((id) => id.toString()).toList();
+    } catch (e) {
+      print("Get Exam IDs Error: $e");
+      throw Exception("Failed to load exam IDs: $e");
     }
   }
 
   // Fetch Eligibility Criteria
-  Future<List<dynamic>> getEligibility() async {
-    Response response = await _dio.get("/eligibility");
-    return response.data;
+  Future<Map<String, dynamic>> getEligibility() async {
+    try {
+      Response response = await _dio.get("/eligibility");
+      return _handleResponse(response);
+    } catch (e) {
+      print("Get Eligibility Error: $e");
+      throw Exception("Failed to load eligibility criteria: $e");
+    }
   }
 
   // Fetch Posts
-  Future<List<dynamic>> getPosts() async {
-    Response response = await _dio.get("/posts");
-    return response.data;
+  Future<Map<String, dynamic>> getPosts() async {
+    try {
+      Response response = await _dio.get("/posts");
+      return _handleResponse(response);
+    } catch (e) {
+      print("Get Posts Error: $e");
+      throw Exception("Failed to load posts: $e");
+    }
   }
 }

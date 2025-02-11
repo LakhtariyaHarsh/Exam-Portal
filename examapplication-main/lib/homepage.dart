@@ -33,7 +33,7 @@ class _MyPageState extends State<MyPage> {
     Colors.green[700]!,
     Color(0xffff36ff),
     Colors.blue,
-    Colors.grey,
+    Colors.redAccent,
   ];
 
 
@@ -81,8 +81,9 @@ class _MyPageState extends State<MyPage> {
                         decoration: const BoxDecoration(
                           color: Color.fromARGB(255, 244, 245, 246),
                         ),
-                        child: Container(
-                          child: const Column(children: [
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
                             CircleAvatar(
                               radius: 40,
                               backgroundImage:
@@ -91,11 +92,8 @@ class _MyPageState extends State<MyPage> {
                             SizedBox(
                               height: 10,
                             ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [Text("SARKARI RESULT")],
-                            )
-                          ]),
+                            Text("SARKARI RESULT"),
+                          ],
                         ),
                       ),
                     ),
@@ -245,7 +243,7 @@ class _MyPageState extends State<MyPage> {
                           width: screenWidth * 0.8,
                           child: Center(
                             child: Wrap(
-                              spacing: 5,
+                              spacing: 10,
                               runSpacing: 10,
                               children: List.generate(
                                   examViewModel.buttonData.length, (index) {
@@ -289,22 +287,22 @@ class _MyPageState extends State<MyPage> {
                           children: [
                             ExamSection(
                                 title: "Result",
-                                exams: examViewModel.resultExamList),
+                                exams: examViewModel.resultExamList, path: '/result',),
                             ExamSection(
                                 title: "Admit Card",
-                                exams: examViewModel.admitCardExamList),
+                                exams: examViewModel.admitCardExamList, path: '/admitcard',),
                             ExamSection(
                                 title: "Latest Jobs",
-                                exams: examViewModel.examList),
+                                exams: examViewModel.examList, path: '/latestjob',),
                             ExamSection(
                                 title: "Answer Key",
-                                exams: examViewModel.answerKeyExamList),
+                                exams: examViewModel.answerKeyExamList, path: '/answerkey',),
                             ExamSection(
                                 title: "Syllabus",
-                                exams: examViewModel.syllabusExamList),
+                                exams: examViewModel.syllabusExamList, path: '/syllabus',),
                             ExamSection(
                                 title: "Admission",
-                                exams: admissionData),
+                                exams: admissionData, path: '/admission',),
                           ],
                         ),
                       ),
@@ -321,8 +319,9 @@ class _MyPageState extends State<MyPage> {
 class ExamSection extends StatelessWidget {
   final String title;
   final List<String> exams;
+  final String path;
 
-  ExamSection({required this.title, required this.exams});
+  ExamSection({required this.title, required this.exams, required this.path});
 
   @override
   Widget build(BuildContext context) {
@@ -360,7 +359,7 @@ class ExamSection extends StatelessWidget {
             alignment: Alignment.bottomRight,
             child: TextButton(
               onPressed: () {
-                context.go('/${title.toLowerCase().replaceAll(" ", "")}');
+                context.go(path);
               },
               child: Text("View More",
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),

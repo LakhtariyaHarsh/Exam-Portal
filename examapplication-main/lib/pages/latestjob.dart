@@ -1,23 +1,26 @@
+import 'package:exam_portal/pages/result.dart';
 import 'package:exam_portal/services/api_service.dart';
+import 'package:exam_portal/view_models/exam_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../details_page.dart';
 
-class latestjobPage extends StatefulWidget {
-  latestjobPage({super.key});
+class LatestJobPage extends StatefulWidget {
+  LatestJobPage({super.key});
 
   @override
-  State<latestjobPage> createState() => _latestjobPageState();
+  State<LatestJobPage> createState() => _LatestJobPageState();
 }
 
-class _latestjobPageState extends State<latestjobPage> {
+class _LatestJobPageState extends State<LatestJobPage> {
   final ApiService _apiService = ApiService();
-  List<String> examList = []; // Stores fetched exams
+  List<Map<String, String>> examList = []; // Stores fetched exams
   bool isLoading = true;
   bool isLoadingMore = false;
-  int page = 1;  // Current page
-  int limit = 1; // Exams per page
-  int totalPages = 3; // Total pages from API
+  int page = 1; // Current page
+  int limit = 25; // Exams per page
+  int totalPages = 1; // Total pages from API
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -27,7 +30,7 @@ class _latestjobPageState extends State<latestjobPage> {
     _scrollController.addListener(_scrollListener);
   }
 
-  // Fetch Exams with Pagination
+  // Fetch Exams with Pagination (Store ID & Name)
   Future<void> fetchExams({bool isLoadMore = false}) async {
     if (isLoadMore && (isLoadingMore || page > totalPages)) return;
 
@@ -41,8 +44,17 @@ class _latestjobPageState extends State<latestjobPage> {
       Map<String, dynamic> data = await _apiService.getExams(page, limit);
 
       setState(() {
-        examList.addAll(data["exams"]); // Append new exams
-        totalPages = data["totalPages"]; // Total pages from API
+        // Store exams as a list of maps (id & name)
+        examList.addAll(data["exams"]
+            .where((exam) => exam["_id"] != null && exam["name"] != null)
+            .map<Map<String, String>>((exam) {
+          return {
+            "id": exam["_id"].toString(),
+            "name": exam["name"].toString(),
+          };
+        }).toList());
+
+        totalPages = data["totalPages"]; // Update total pages
         isLoading = false;
         isLoadingMore = false;
       });
@@ -57,8 +69,9 @@ class _latestjobPageState extends State<latestjobPage> {
 
   // Scroll Listener to Detect When User Reaches Bottom
   void _scrollListener() {
-    print('Inside the Scroll Listener');
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 && !isLoadingMore) {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !isLoadingMore) {
       if (page < totalPages) {
         page++; // Increment page
         fetchExams(isLoadMore: true);
@@ -71,164 +84,294 @@ class _latestjobPageState extends State<latestjobPage> {
     _scrollController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
-
-    bool isMobile = screenWidth < 600;
-    bool isTablet = screenWidth >= 600 && screenWidth < 1024;
+    final examViewModel = Provider.of<ExamViewModel>(context);
+    bool isMobile = screenWidth < 720;
+    bool isTablet = screenWidth >= 720 && screenWidth < 1024;
     bool isDesktop = screenWidth >= 1024;
 
-    double FontSize;
+    double fontSize;
     if (isMobile) {
-      FontSize = 14;
+      fontSize = 14;
     } else if (isTablet) {
-      FontSize = 16;
+      fontSize = 16;
     } else {
-      FontSize = 18;
+      fontSize = 18;
     }
 
     return Scaffold(
+      appBar: screenWidth < 720
+          ? AppBar(
+              backgroundColor: const Color(0xffaa183d),
+              title: Text(
+                "EXAM PORTAL",
+                style: TextStyle(fontSize: fontSize * 1.1, color: Colors.white),
+              ),
+              iconTheme: const IconThemeData(color: Colors.white),
+            )
+          : null,
+      drawer: screenWidth < 720
+          ? Drawer(
+              child: Container(
+                color: const Color(0xffe3e4e6),
+                child: ListView(
+                  children: [
+                    SizedBox(
+                      height: screenHeight * 0.25,
+                      child: DrawerHeader(
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 244, 245, 246),
+                        ),
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundImage:
+                                  AssetImage("assets/logo_drawer.icon.png"),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text("SARKARI RESULT"),
+                          ],
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text("Home"),
+                      onTap: () {
+                        context.go('/');
+                      },
+                    ),
+                    ListTile(
+                      onTap: () {
+                        context.go('/latestjob');
+                      },
+                      title: Text("Latest Jobs"),
+                    ),
+                    ListTile(
+                      title: Text("Results"),
+                      onTap: () {
+                        context.go('/result');
+                      },
+                    ),
+                    ListTile(
+                      onTap: () {
+                        context.go('/admitcard');
+                      },
+                      title: Text("Admit Card"),
+                    ),
+                    ListTile(
+                      onTap: () {
+                        context.go('/answerkey');
+                      },
+                      title: Text("Answer Key"),
+                    ),
+                    ListTile(
+                      onTap: () {
+                        context.go('/syllabus');
+                      },
+                      title: Text("Syllabus"),
+                    ),
+                    ListTile(
+                      onTap: () {
+                        context.go('/search');
+                      },
+                      title: Text("Search"),
+                    ),
+                    ListTile(
+                      onTap: () {
+                        context.go('/contactus');
+                      },
+                      title: Text("Contact Us"),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : null,
       body: Padding(
         padding: EdgeInsets.only(
             top: screenHeight * 0.02, bottom: screenHeight * 0.02),
-        child: SingleChildScrollView(
+        child: CustomScrollView(
           controller: _scrollController,
-          child: Center(
-            child: Column(
-              children: [
-                Container(
-                  width: 900,
-                  color: const Color(0xffaa183d),
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        top: screenHeight * 0.02, bottom: screenHeight * 0.02),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "SARKARI RESULT",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: FontSize * 2),
-                        ),
-                        Text("WWW.SARKARIRESULT.COM",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: FontSize))
-                      ],
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 900,
-                  color: Colors.black,
-                  child: const SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        NavButton(
-                          label: "Home",
-                          path: "/",
-                        ),
-                        NavButton(
-                          label: "Latest Jobs",
-                          path: "/latestjob",
-                        ),
-                        NavButton(label: "Results", path: "/result"),
-                        NavButton(label: "Admit Card", path: "/admitcard"),
-                        NavButton(label: "Answer Key", path: "/answerkey"),
-                        NavButton(label: "Syllabus", path: "/syllabus"),
-                        NavButton(label: "Search", path: "/search"),
-                        NavButton(label: "Contact Us", path: "/contactus")
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: screenHeight * 0.05),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 300),
-                    child: Container(
-                      width: 600,
-                      decoration: const BoxDecoration(
-                          border: Border(
-                              right: BorderSide(),
-                              left: BorderSide(),
-                              top: BorderSide(),
-                              bottom: BorderSide())),
-                      child: Padding(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Center(
+                child: Column(
+                  children: [
+                    if (screenWidth >= 720)
+                      Container(
+                        width: screenWidth * 0.8,
+                        height: screenWidth * 0.15,
+                        color: const Color(0xffaa183d),
+                        child: Padding(
                           padding: EdgeInsets.only(
                               top: screenHeight * 0.02,
-                              left: screenHeight * 0.01,
-                              right: screenHeight * 0.01),
-                          child: Column(
+                              bottom: screenHeight * 0.01),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Container(
-                                height: screenHeight * 0.06,
-                                color: const Color(0xffaa183d),
-                                child: Center(
-                                  child: Text(
-                                    "Latest Jobs 2024",
-                                    textAlign: TextAlign.center,
+                                child: Image(
+                                    width: fontSize * 6,
+                                    height: fontSize * 6,
+                                    image: const AssetImage(
+                                      "assets/logo_drawer.icon.png",
+                                    )),
+                              ),
+                              SizedBox(
+                                width: screenWidth * 0.05,
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "SARKARI RESULT",
                                     style: TextStyle(
-                                        fontSize: FontSize * 1.5,
-                                        color: Colors.white),
+                                        color: Colors.white,
+                                        fontSize: fontSize * 2.3,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text("WWW.SARKARIRESULT.COM",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: fontSize * 1.1,
+                                          fontWeight: FontWeight.bold))
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    if (screenWidth >= 720)
+                      Container(
+                        width: screenWidth * 0.8,
+                        height: screenWidth * 0.035,
+                        color: Colors.black,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            NavButton(
+                              label: "Home",
+                              path: "/",
+                            ),
+                            customDivider(),
+                            NavButton(
+                              label: "Latest Jobs",
+                              path: "/latestjob",
+                            ),
+                            customDivider(),
+                            NavButton(label: "Results", path: "/result"),
+                            customDivider(),
+                            NavButton(label: "Admit Card", path: "/admitcard"),
+                            customDivider(),
+                            NavButton(label: "Answer Key", path: "/answerkey"),
+                            customDivider(),
+                            NavButton(label: "Syllabus", path: "/syllabus"),
+                            customDivider(),
+                            NavButton(label: "Search", path: "/search"),
+                            customDivider(),
+                            NavButton(label: "Contact Us", path: "/contactus")
+                          ],
+                        ),
+                      ),
+                    Padding(
+                      padding: EdgeInsets.only(top: screenHeight * 0.05),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minWidth: 300),
+                        child: Container(
+                          width: 600,
+                          decoration: const BoxDecoration(
+                              border: Border(
+                                  right: BorderSide(),
+                                  left: BorderSide(),
+                                  top: BorderSide(),
+                                  bottom: BorderSide())),
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                                top: screenHeight * 0.02,
+                                left: screenHeight * 0.01,
+                                right: screenHeight * 0.01),
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: screenHeight * 0.06,
+                                  color: const Color(0xffaa183d),
+                                  child: Center(
+                                    child: Text(
+                                      "Latest Jobs 2024",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: fontSize * 1.5,
+                                          color: Colors.white),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              isLoading
-                                  ? Center(child: CircularProgressIndicator())
-                                  : ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: examList.length +
-                                          1, // Add extra for loader
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        if (index == examList.length) {
-                                          return isLoadingMore
-                                              ? Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Center(
-                                                      child:
-                                                          CircularProgressIndicator()),
-                                                )
-                                              : SizedBox();
-                                        }
-                                        return Column(
-                                          children: [
-                                            InkWell(
-                                              onTap: () => {
-                                                    context.go('/details')
-                                                  },
-                                              child: ListTile(
-                                                leading: Icon(Icons.circle,
-                                                    size: FontSize * 0.6),
-                                                title: Text(examList[index],
-                                                    style: TextStyle(
-                                                        fontSize:
-                                                            FontSize * 1.1)),
+                                isLoading
+                                    ? Center(child: CircularProgressIndicator())
+                                    : ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: examList.length +
+                                            1, // Extra for loader
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          if (index == examList.length) {
+                                            return isLoadingMore
+                                                ? Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Center(
+                                                        child:
+                                                            CircularProgressIndicator()),
+                                                  )
+                                                : SizedBox();
+                                          }
+
+                                          String examId = examList[index]
+                                              ["id"]!; // Extract ID
+                                          String examName = examList[index]
+                                              ["name"]!; // Extract Name
+
+                                          return Column(
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  context.go(
+                                                      '/latestjob/examname/${Uri.encodeComponent(examId)}');
+                                                },
+                                                child: ListTile(
+                                                  leading: Icon(Icons.circle,
+                                                      size: fontSize * 0.6),
+                                                  title: Text(examName,
+                                                      style: TextStyle(
+                                                          fontSize:
+                                                              fontSize * 1.1)),
+                                                ),
                                               ),
-                                            )
-                                          ],
-                                        );
-                                      },
-                                    ),
-                            ],
-                          )),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
