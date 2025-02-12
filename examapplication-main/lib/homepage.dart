@@ -258,10 +258,10 @@ class _MyPageState extends State<MyPage> {
                                   child: Center(
                                     child: TextButton(
                                       onPressed: () {
-                                        context.go('/details');
+                                        context.go('/details/${Uri.encodeComponent(examViewModel.buttonData[index]['id']!)}');
                                       },
                                       child: Text(
-                                        examViewModel.buttonData[index],
+                                        examViewModel.buttonData[index]['name']!,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: Colors.white,
@@ -287,22 +287,28 @@ class _MyPageState extends State<MyPage> {
                           children: [
                             ExamSection(
                                 title: "Result",
-                                exams: examViewModel.resultExamList, path: '/result',),
+                                exams: examViewModel.resultExamList,
+                                path: '/result'),
                             ExamSection(
                                 title: "Admit Card",
-                                exams: examViewModel.admitCardExamList, path: '/admitcard',),
+                                exams: examViewModel.admitCardExamList,
+                                path: '/admitcard'),
                             ExamSection(
                                 title: "Latest Jobs",
-                                exams: examViewModel.examList, path: '/latestjob',),
+                                exams: examViewModel.examList,
+                                path: '/latestjob'),
                             ExamSection(
                                 title: "Answer Key",
-                                exams: examViewModel.answerKeyExamList, path: '/answerkey',),
+                                exams: examViewModel.answerKeyExamList,
+                                path: '/answerkey'),
                             ExamSection(
                                 title: "Syllabus",
-                                exams: examViewModel.syllabusExamList, path: '/syllabus',),
+                                exams: examViewModel.syllabusExamList,
+                                path: '/syllabus'),
                             ExamSection(
                                 title: "Admission",
-                                exams: admissionData, path: '/admission',),
+                                exams: admissionData.map((name) => {"name": name, "id": ""}).toList(),
+                                path: '/admission'),
                           ],
                         ),
                       ),
@@ -318,7 +324,7 @@ class _MyPageState extends State<MyPage> {
 
 class ExamSection extends StatelessWidget {
   final String title;
-  final List<String> exams;
+  final List<Map<String, String>> exams;
   final String path;
 
   ExamSection({required this.title, required this.exams, required this.path});
@@ -348,10 +354,17 @@ class ExamSection extends StatelessWidget {
             shrinkWrap: true,
             itemCount: exams.length,
             itemBuilder: (context, index) {
+              String examId = exams[index]["id"] ?? "";
               return ListTile(
                 leading: Icon(Icons.circle, size: 10),
-                title: Text(exams[index], style: TextStyle(fontSize: 14)),
-                onTap: () => context.go('/details'),
+                title: Text(exams[index]["name"]!, style: TextStyle(fontSize: 14)),
+                onTap: () {
+                  if (examId.isNotEmpty) {
+                    context.go('/details/${Uri.encodeComponent(examId)}');
+                  } else {
+                    print("Invalid exam ID");
+                  }
+                },
               );
             },
           ),

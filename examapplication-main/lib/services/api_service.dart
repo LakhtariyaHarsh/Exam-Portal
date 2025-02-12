@@ -133,17 +133,6 @@ Future<Map<String, dynamic>> _fetchExams(String endpoint, int page, int limit,
     }
   }
 
-  // Fetch all exam IDs
-  Future<List<String>> getExamIds() async {
-    try {
-      Response response = await _dio.get("/exams");
-      return (response.data as List).map((id) => id.toString()).toList();
-    } catch (e) {
-      print("Get Exam IDs Error: $e");
-      throw Exception("Failed to load exam IDs: $e");
-    }
-  }
-
   // Fetch Eligibility Criteria
   Future<Map<String, dynamic>> getEligibility() async {
     try {
