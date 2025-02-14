@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../view_models/exam_view_model.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class MyPage extends StatefulWidget {
   MyPage({super.key});
@@ -11,7 +12,6 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-
   var admissionData = [
     "UP CT Nursery, NTT, DPEd Admission Online Form 2024",
     "NTA JEEMAIN Session I Correction / Edit Form 2025",
@@ -35,7 +35,6 @@ class _MyPageState extends State<MyPage> {
     Colors.blue,
     Colors.redAccent,
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -238,7 +237,12 @@ class _MyPageState extends State<MyPage> {
                     height: 30,
                   ),
                   examViewModel.isLoading
-                      ? Center(child: CircularProgressIndicator())
+                      ? Center(
+                          child: SpinKitFadingCircle(
+                            color: Colors.blue, // Change color as needed
+                            size: 50.0,
+                          ),
+                        )
                       : Container(
                           width: screenWidth * 0.8,
                           child: Center(
@@ -258,10 +262,12 @@ class _MyPageState extends State<MyPage> {
                                   child: Center(
                                     child: TextButton(
                                       onPressed: () {
-                                        context.go('/details/${Uri.encodeComponent(examViewModel.buttonData[index]['id']!)}');
+                                        context.go(
+                                            '/details/${Uri.encodeComponent(examViewModel.buttonData[index]['name']!)}');
                                       },
                                       child: Text(
-                                        examViewModel.buttonData[index]['name']!,
+                                        examViewModel.buttonData[index]
+                                            ['name']!,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: Colors.white,
@@ -307,7 +313,9 @@ class _MyPageState extends State<MyPage> {
                                 path: '/syllabus'),
                             ExamSection(
                                 title: "Admission",
-                                exams: admissionData.map((name) => {"name": name, "id": ""}).toList(),
+                                exams: admissionData
+                                    .map((name) => {"name": name, "id": ""})
+                                    .toList(),
                                 path: '/admission'),
                           ],
                         ),
@@ -354,10 +362,11 @@ class ExamSection extends StatelessWidget {
             shrinkWrap: true,
             itemCount: exams.length,
             itemBuilder: (context, index) {
-              String examId = exams[index]["id"] ?? "";
+              String examId = exams[index]["name"] ?? "";
               return ListTile(
                 leading: Icon(Icons.circle, size: 10),
-                title: Text(exams[index]["name"]!, style: TextStyle(fontSize: 14)),
+                title:
+                    Text(exams[index]["name"]!, style: TextStyle(fontSize: 14)),
                 onTap: () {
                   if (examId.isNotEmpty) {
                     context.go('/details/${Uri.encodeComponent(examId)}');

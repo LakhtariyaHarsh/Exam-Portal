@@ -1,5 +1,6 @@
 import 'package:exam_portal/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:exam_portal/pages/result.dart';
 import '../details_page.dart';
@@ -39,7 +40,8 @@ class _SyllabusPageState extends State<SyllabusPage> {
         setState(() => isLoading = true);
       }
 
-      Map<String, dynamic> data = await _apiService.getExamsBySyllabus(page, limit);
+      Map<String, dynamic> data =
+          await _apiService.getExamsBySyllabus(page, limit);
 
       setState(() {
         // Store exams as a list of maps (id & name)
@@ -313,7 +315,13 @@ class _SyllabusPageState extends State<SyllabusPage> {
                                   ),
                                 ),
                                 isLoading
-                                    ? Center(child: CircularProgressIndicator())
+                                    ? Center(
+                                        child: SpinKitFadingCircle(
+                                          color: Colors
+                                              .blue, // Change color as needed
+                                          size: 50.0,
+                                        ),
+                                      )
                                     : ListView.builder(
                                         shrinkWrap: true,
                                         physics: NeverScrollableScrollPhysics(),
@@ -328,14 +336,19 @@ class _SyllabusPageState extends State<SyllabusPage> {
                                                         const EdgeInsets.all(
                                                             8.0),
                                                     child: Center(
-                                                        child:
-                                                            CircularProgressIndicator()),
+                                                      child:
+                                                          SpinKitFadingCircle(
+                                                        color: Colors
+                                                            .blue, // Change color as needed
+                                                        size: 50.0,
+                                                      ),
+                                                    ),
                                                   )
                                                 : SizedBox();
                                           }
 
-                                          String examId = examList[index]
-                                              ["id"]!; // Extract ID
+                                          // String examId = examList[index]
+                                          //     ["id"]!; // Extract ID
                                           String examName = examList[index]
                                               ["name"]!; // Extract Name
 
@@ -344,7 +357,7 @@ class _SyllabusPageState extends State<SyllabusPage> {
                                               InkWell(
                                                 onTap: () {
                                                   context.go(
-                                                      '/syllabus/examname/${Uri.encodeComponent(examId)}');
+                                                      '/syllabus/examname/${Uri.encodeComponent(examName)}');
                                                 },
                                                 child: ListTile(
                                                   leading: Icon(Icons.circle,

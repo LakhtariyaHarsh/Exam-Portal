@@ -1,6 +1,7 @@
 import 'package:exam_portal/pages/result.dart';
 import 'package:exam_portal/view_models/exam_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -143,7 +144,10 @@ class _jobDetailsState extends State<jobDetails> {
           // controller: _scrollController,
           child: Center(
             child: examViewModel.selectedExam == null
-                ? CircularProgressIndicator()
+                ? SpinKitFadingCircle(
+                    color: Colors.blue, // Change color as needed
+                    size: 50.0,
+                  )
                 : examViewModel.selectedExam!.isEmpty
                     ? const Text("No Data Available",
                         style: TextStyle(fontSize: 16)) // Handle empty data
@@ -382,7 +386,7 @@ class _jobDetailsState extends State<jobDetails> {
                                                   text: TextSpan(children: [
                                                 TextSpan(
                                                     text:
-                                                        "• Application Begin :",
+                                                        "• Application Begin : ",
                                                     style: TextStyle(
                                                         fontSize:
                                                             FontSize * 0.85)),
@@ -399,7 +403,7 @@ class _jobDetailsState extends State<jobDetails> {
                                                   text: TextSpan(children: [
                                                 TextSpan(
                                                     text:
-                                                        "• Last Date for Apply Online  :",
+                                                        "• Last Date for Apply Online  : ",
                                                     style: TextStyle(
                                                         fontSize:
                                                             FontSize * 0.85)),
@@ -416,24 +420,23 @@ class _jobDetailsState extends State<jobDetails> {
                                                   text: TextSpan(children: [
                                                 TextSpan(
                                                     text:
-                                                        "• Pay Examination Fee Last Date :",
+                                                        "• Pay Examination Fee Last Date : ${_formatDate(examViewModel.selectedExam!['lastDateToPayExamFee'])}",
                                                     style: TextStyle(
                                                         fontSize:
                                                             FontSize * 0.85)),
-                                                const TextSpan(
-                                                    text: " 22/12/2024",
-                                                    style: TextStyle(
-                                                        fontSize: 0.85))
                                               ])),
                                               RichText(
                                                   text: TextSpan(children: [
                                                 TextSpan(
-                                                    text: "• Exam Date :",
+                                                    text: "• Exam Date : ",
                                                     style: TextStyle(
                                                         fontSize:
                                                             FontSize * 0.85)),
                                                 TextSpan(
-                                                    text: "",
+                                                    text: _formatDate(
+                                                        examViewModel
+                                                                .selectedExam![
+                                                            'examDate']),
                                                     style: TextStyle(
                                                         fontSize:
                                                             FontSize * 0.85))
@@ -442,7 +445,7 @@ class _jobDetailsState extends State<jobDetails> {
                                                   text: TextSpan(children: [
                                                 TextSpan(
                                                     text:
-                                                        "• Admit Card Available :",
+                                                        "• Admit Card Available : ",
                                                     style: TextStyle(
                                                         fontSize:
                                                             FontSize * 0.85)),
@@ -484,12 +487,13 @@ class _jobDetailsState extends State<jobDetails> {
                                                   text: TextSpan(children: [
                                                 TextSpan(
                                                     text:
-                                                        "• General / OBC / EWS :",
+                                                        "• General / OBC / EWS : ",
                                                     style: TextStyle(
                                                         fontSize:
                                                             FontSize * 0.85)),
                                                 TextSpan(
-                                                    text: "  1000/-",
+                                                    text:
+                                                        "  ${examViewModel.selectedExam!['generalCategoryFee'].toString()}/-",
                                                     style: TextStyle(
                                                         fontSize:
                                                             FontSize * 0.85))
@@ -502,7 +506,8 @@ class _jobDetailsState extends State<jobDetails> {
                                                         fontSize:
                                                             FontSize * 0.85)),
                                                 TextSpan(
-                                                    text: "  1000/-",
+                                                    text:
+                                                        "  ${examViewModel.selectedExam!['scstCategoryFee'].toString()}/-",
                                                     style: TextStyle(
                                                         fontSize:
                                                             FontSize * 0.85))
@@ -553,7 +558,7 @@ class _jobDetailsState extends State<jobDetails> {
                                             ),
                                             TextSpan(
                                               text:
-                                                  "Age Limit as on 31/10/2024",
+                                                  "Age Limit as on ${_formatDate(examViewModel.selectedExam!['ageFrom'])}",
                                               style: TextStyle(
                                                   fontSize: FontSize * 1.1,
                                                   color: Colors.green[800],
@@ -567,22 +572,24 @@ class _jobDetailsState extends State<jobDetails> {
                                     RichText(
                                         text: TextSpan(children: [
                                       TextSpan(
-                                          text: "• Minimum Age :",
+                                          text: "• Minimum Age : ",
                                           style: TextStyle(
                                               fontSize: FontSize * 0.85)),
                                       TextSpan(
-                                          text: " 21 Years",
+                                          text:
+                                              "${examViewModel.selectedExam!['minAge'].toString()} Years",
                                           style: TextStyle(
                                               fontSize: FontSize * 0.85))
                                     ])),
                                     RichText(
                                         text: TextSpan(children: [
                                       TextSpan(
-                                          text: "• Maximum Age :",
+                                          text: "• Maximum Age : ",
                                           style: TextStyle(
                                               fontSize: FontSize * 0.85)),
                                       TextSpan(
-                                          text: " 32 Years",
+                                          text:
+                                              "${examViewModel.selectedExam!['maxAge'].toString()} Years",
                                           style: TextStyle(
                                               fontSize: FontSize * 0.85))
                                     ])),
@@ -685,48 +692,106 @@ class _jobDetailsState extends State<jobDetails> {
                                         ),
                                       )),
                                     ]),
-                                    TableRow(children: [
-                                      Center(
-                                          child: Padding(
-                                        padding: EdgeInsets.only(
-                                            top: screenHeight * 0.01),
-                                        child: Text("Clerk",
-                                            style: TextStyle(
-                                                fontSize: FontSize * 0.85)),
-                                      )),
-                                      Center(
-                                          child: Padding(
-                                        padding: EdgeInsets.only(
-                                            top: screenHeight * 0.01),
-                                        child: Text("25",
-                                            style: TextStyle(
-                                                fontSize: FontSize * 0.85)),
-                                      )),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            left: screenHeight * 0.01,
-                                            top: screenHeight * 0.01,
-                                            bottom: screenHeight * 0.01),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                                "• Bachelor / Master Degree in Any Subject / Stream in Any Recognized University in India with Minimum 50% Marks.",
-                                                style: TextStyle(
-                                                    fontSize: FontSize * 0.85)),
-                                            Text(
-                                                "• Basic Knowledge of Computer Operation.",
-                                                style: TextStyle(
-                                                    fontSize: FontSize * 0.85)),
-                                            Text(
-                                                "• For Management Trainee Post : Required 50% Marks.",
-                                                style: TextStyle(
-                                                    fontSize: FontSize * 0.85))
-                                          ],
-                                        ),
-                                      )
-                                    ])
+                                    TableRow(
+                                      children: examViewModel.selectedExam !=
+                                                  null &&
+                                              examViewModel.selectedExam![
+                                                      'postDetails'] !=
+                                                  null &&
+                                              examViewModel
+                                                  .selectedExam!['postDetails']
+                                                  .isNotEmpty
+                                          ? [
+                                              Center(
+                                                  child: Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: screenHeight * 0.01),
+                                                child: Text(
+                                                    examViewModel.selectedExam![
+                                                                'postDetails']
+                                                            [0]['postName'] ??
+                                                        "N/A",
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            FontSize * 0.85)),
+                                              )),
+                                              Center(
+                                                  child: Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: screenHeight * 0.01),
+                                                child: Text(
+                                                    examViewModel.selectedExam![
+                                                                'postDetails']
+                                                                [0]['totalPost']
+                                                            ?.toString() ??
+                                                        "N/A",
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            FontSize * 0.85)),
+                                              )),
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                    left: screenHeight * 0.01,
+                                                    top: screenHeight * 0.01,
+                                                    bottom:
+                                                        screenHeight * 0.01),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                        "• ${examViewModel.selectedExam!['postDetails'][0]['eligiblityDetails'] ?? "Eligibility details not available"}",
+                                                        style: TextStyle(
+                                                            fontSize: FontSize *
+                                                                0.85)),
+                                                    Text(
+                                                        "• Basic Knowledge of Computer Operation.",
+                                                        style: TextStyle(
+                                                            fontSize: FontSize *
+                                                                0.85)),
+                                                    Text(
+                                                        "• For Management Trainee Post : Required 50% Marks.",
+                                                        style: TextStyle(
+                                                            fontSize: FontSize *
+                                                                0.85))
+                                                  ],
+                                                ),
+                                              )
+                                            ]
+                                          : [
+                                              /// Fallback when `postDetails` is empty
+                                              Center(
+                                                  child: Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: screenHeight * 0.01),
+                                                child: Text("N/A",
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            FontSize * 0.85)),
+                                              )),
+                                              Center(
+                                                  child: Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: screenHeight * 0.01),
+                                                child: Text("N/A",
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            FontSize * 0.85)),
+                                              )),
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                    left: screenHeight * 0.01,
+                                                    top: screenHeight * 0.01,
+                                                    bottom:
+                                                        screenHeight * 0.01),
+                                                child: Text(
+                                                    "No post details available",
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            FontSize * 0.85)),
+                                              )
+                                            ],
+                                    ),
                                   ],
                                 ),
                               )),
