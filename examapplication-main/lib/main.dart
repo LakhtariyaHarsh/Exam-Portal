@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_route.dart';
 import 'homepage.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -29,6 +30,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       //routeInformationParser: AppRoute().router.routeInformationParser,
       //routerDelegate: AppRoute().router.routerDelegate,
+      theme: ThemeData(
+        useMaterial3: true,
+        textTheme: GoogleFonts.poppinsTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       routerConfig: router,
     );
   }

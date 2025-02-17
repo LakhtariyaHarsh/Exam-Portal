@@ -41,13 +41,13 @@ class _MyPageState extends State<MyPage> {
     final examViewModel = Provider.of<ExamViewModel>(context);
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
-    double buttonWidth = screenWidth * 0.25;
-    double buttonHeight = 80;
 
-    bool isMobile = screenWidth < 600;
-    bool isTablet = screenWidth >= 600 && screenWidth < 1024;
+    bool isMobile = screenWidth < 720;
+    bool isTablet = screenWidth >= 720 && screenWidth < 1024;
     bool isDesktop = screenWidth >= 1024;
 
+    double buttonWidth =isMobile ? screenWidth * 0.85: screenWidth * 0.25;
+    double buttonHeight = 80;
     double FontSize;
     if (isMobile) {
       FontSize = 14;
@@ -58,7 +58,7 @@ class _MyPageState extends State<MyPage> {
     }
 
     return Scaffold(
-      appBar: screenWidth < 600
+      appBar: screenWidth < 720
           ? AppBar(
               backgroundColor: const Color(0xffaa183d),
               title: Text(
@@ -68,7 +68,7 @@ class _MyPageState extends State<MyPage> {
               iconTheme: const IconThemeData(color: Colors.white),
             )
           : null,
-      drawer: screenWidth < 600
+      drawer: screenWidth < 720
           ? Drawer(
               child: Container(
                 color: const Color(0xffe3e4e6),
@@ -156,7 +156,7 @@ class _MyPageState extends State<MyPage> {
             child: Center(
               child: Column(
                 children: [
-                  if (screenWidth >= 600)
+                  if (screenWidth >= 720)
                     Container(
                       width: screenWidth * 0.8,
                       height: screenWidth * 0.15,
@@ -201,7 +201,7 @@ class _MyPageState extends State<MyPage> {
                         ),
                       ),
                     ),
-                  if (screenWidth >= 600)
+                  if (screenWidth >= 720)
                     Container(
                       width: screenWidth * 0.8,
                       height: screenWidth * 0.035,
@@ -285,7 +285,7 @@ class _MyPageState extends State<MyPage> {
                   Container(
                     width: screenWidth * 0.8,
                     child: Padding(
-                      padding: EdgeInsets.only(top: screenWidth * 0.02),
+                      padding: EdgeInsets.only(top:isMobile? screenWidth * 0.06: screenWidth * 0.02),
                       child: Center(
                         child: Wrap(
                           spacing: 20,
@@ -407,8 +407,8 @@ class _NavButtonState extends State<NavButton> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    bool isMobile = screenWidth < 600;
-    bool isTablet = screenWidth >= 600 && screenWidth < 1024;
+    bool isMobile = screenWidth < 720;
+    bool isTablet = screenWidth >= 720 && screenWidth < 1024;
     bool isDesktop = screenWidth >= 1024;
 
     double FontSize;

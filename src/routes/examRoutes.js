@@ -9,7 +9,7 @@ router.get("/admit-card", examController.getExamsByAdmitCard);
 router.get("/result", examController.getExamsByResult);
 router.get("/answerkey", examController.getExamsByanswerKey);
 router.get("/syllabus", examController.getExamsBysyllabus);
-// router.get("/:id", examController.getExamById);
+router.get("/exambyid/:id", examController.getExamById);
 router.get("/:name", examController.getExamByName);
 router.post("/create", examController.createExam);
 router.put("/update/:id", examController.updateExam);
