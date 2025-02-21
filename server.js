@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const morgan = require("morgan");
 
 // Load environment variables
 dotenv.config();
@@ -14,6 +15,7 @@ const app = express();
 // Middleware
 app.use(cors({ origin: "*" })); // Allow all origins (For Development)
 app.use(express.json());
+app.use(morgan("dev"));
 
 // Routes
 app.use("/api/users", require("./src/routes/userRoutes")); // User authentication

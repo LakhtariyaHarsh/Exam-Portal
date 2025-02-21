@@ -123,7 +123,7 @@ exports.getUserProfile = async (req, res) => {
  * @desc Update user profile
  * @route PUT /api/users/profile
  * @access Private
- */
+ */ 
 exports.updateUserProfile = async (req, res) => {
     try {
         const { userId } = req.params; // Get user ID from URL params

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const ExamSchema = new mongoose.Schema({
-    examCategory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
+    examCategory: { type: mongoose.Schema.ObjectId, ref: "Category" },
     name: { type: String, required: true },
     postDate: Date,
     updateDate: Date,

@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const examController = require("../controller/examController");
+const auth = require("../middleware/auth");
+const isAdmin = require("../middleware/admin");
 
 // Exam CRUD routes
 router.get("/", examController.getExams);
@@ -11,8 +13,8 @@ router.get("/answerkey", examController.getExamsByanswerKey);
 router.get("/syllabus", examController.getExamsBysyllabus);
 router.get("/exambyid/:id", examController.getExamById);
 router.get("/:name", examController.getExamByName);
-router.post("/create", examController.createExam);
-router.put("/update/:id", examController.updateExam);
-router.delete("/delete/:id", examController.deleteExam);
+router.post("/create",auth, isAdmin, examController.createExam);
+router.put("/update/:id", auth, isAdmin, examController.updateExam);
+router.delete("/delete/:id",auth, isAdmin, examController.deleteExam);
 
 module.exports = router;

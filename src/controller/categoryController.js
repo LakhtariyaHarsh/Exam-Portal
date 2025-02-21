@@ -41,6 +41,18 @@ exports.getCategoryById = async (req, res) => {
     }
 };
 
+// Get single exam by name
+// Get category by name
+exports.getCategoryByName = async (req, res) => {
+    try {
+        const category = await Category.findOne({ categoryName: req.params.categoryName });
+        if (!category) return res.status(404).json({ message: "Category not found" });
+        res.json(category);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 // Create a new category
 exports.createCategory = async (req, res) => {
     try {
