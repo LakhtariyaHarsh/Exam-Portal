@@ -53,6 +53,29 @@ exports.getCategoryByName = async (req, res) => {
     }
 };
 
+// Search exams by name dynamically
+exports.searchByCategoryName = async (req, res) => {
+    try {
+        console.log("Inside the Function Query:"); // Debugging
+
+        const searchQuery = req.query.query;
+        console.log("Search Query:", searchQuery); // Debugging
+        
+        if (!searchQuery) {
+            return res.status(400).json({ message: "Search query is required" });
+        }
+        
+        const exams = await Category.find({
+            categoryName: { $regex: searchQuery, $options: "i" }
+        });
+        
+        console.log("Found Exams:", exams); // Debugging
+        res.json(exams);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 // Create a new category
 exports.createCategory = async (req, res) => {
     try {
