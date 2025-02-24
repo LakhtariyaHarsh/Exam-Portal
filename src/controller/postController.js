@@ -30,6 +30,28 @@ exports.getPosts = async (req, res) => {
     }
 };
 
+// Search post by name dynamically
+exports.searchByPostName = async (req, res) => {
+    try {
+        console.log("Inside the post Function Query:"); // Debugging
+
+        const searchQuery = req.query.query;
+        console.log("Search Query:", searchQuery); // Debugging
+        
+        if (!searchQuery) {
+            return res.status(400).json({ message: "Search query is required" });
+        }
+        
+        const posts = await Post.find({
+            postName: { $regex: searchQuery, $options: "i" }
+        });
+        
+        console.log("Found posts:", posts); // Debugging
+        res.json(posts);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 // Get post by ID
 exports.getPostById = async (req, res) => {

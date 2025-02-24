@@ -33,6 +33,29 @@ exports.getEligibilities = async (req, res) => {
     }
 };
 
+// Search Eligibility by name dynamically
+exports.searchByEligibilityName = async (req, res) => {
+    try {
+        console.log("Inside the Function Query:"); // Debugging
+
+        const searchQuery = req.query.query;
+        console.log("Search Query:", searchQuery); // Debugging
+        
+        if (!searchQuery) {
+            return res.status(400).json({ message: "Search query is required" });
+        }
+        
+        const eligibilities = await Eligibility.find({
+            eligiblityCriteria: { $regex: searchQuery, $options: "i" }
+        });
+        
+        console.log("Found eligibilities:", eligibilities); // Debugging
+        res.json(eligibilities);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 // Get eligibility by ID
 exports.getEligibilityById = async (req, res) => {
