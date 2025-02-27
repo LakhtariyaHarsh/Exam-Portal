@@ -8,7 +8,7 @@ const PostSchema = new mongoose.Schema({
     ewsPost: Number,
     scPost: Number,
     stPost: Number,
-    eligiblityDetails: String
+    eligiblityDetails: { type: mongoose.Schema.ObjectId, ref: "Eligibility" },
 });
 
 module.exports = mongoose.model("Post", PostSchema);
