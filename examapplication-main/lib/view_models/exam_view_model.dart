@@ -10,6 +10,8 @@ class ExamViewModel extends ChangeNotifier {
   List<Map<String, String>> resultExamList = [];
   List<Map<String, String>> answerKeyExamList = [];
   List<Map<String, String>> syllabusExamList = [];
+  List<Map<String, String>> CertificateVerificationExamList = [];
+  List<Map<String, String>> importantExamList = [];
 
   Map<String, dynamic>? selectedExam; // Holds the fetched exam details
 
@@ -23,12 +25,14 @@ class ExamViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchAllData() async {
-      await fetchExams();
-      await fetchExamDataByLastdate();
-      await fetchExamsByAdmitCard();
-      await fetchExamsByResult();
-      await fetchExamsByAnswerKey();
-      await fetchExamsBySyllabus();
+    await fetchExams();
+    await fetchExamDataByLastdate();
+    await fetchExamsByAdmitCard();
+    await fetchExamsByResult();
+    await fetchExamsByAnswerKey();
+    await fetchExamsBySyllabus();
+    await fetchExamsByCertificateVerification();
+    await fetchExamsByImportant();
   }
 
   Future<void> fetchExams() async {
@@ -45,10 +49,11 @@ class ExamViewModel extends ChangeNotifier {
     } catch (e) {
       print("Error fetching exams: $e");
     }
-    _setLoading(false);  }
+    _setLoading(false);
+  }
 
   Future<void> fetchExamDataByLastdate() async {
-        _setLoading(true);
+    _setLoading(true);
     try {
       var data = await _apiService.getExamsByLastDateToApply(page, 9);
       buttonData = data["exams"].map<Map<String, String>>((exam) {
@@ -65,7 +70,7 @@ class ExamViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchExamsByAdmitCard() async {
-        _setLoading(true);
+    _setLoading(true);
     try {
       var data = await _apiService.getExamsByAdmitCard(page, limit);
       admitCardExamList = data["exams"].map<Map<String, String>>((exam) {
@@ -82,7 +87,7 @@ class ExamViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchExamsByResult() async {
-        _setLoading(true);
+    _setLoading(true);
     try {
       var data = await _apiService.getExamsByResult(page, limit);
       resultExamList = data["exams"].map<Map<String, String>>((exam) {
@@ -99,7 +104,7 @@ class ExamViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchExamsByAnswerKey() async {
-        _setLoading(true);
+    _setLoading(true);
     try {
       var data = await _apiService.getExamsByAnswerKey(page, limit);
       answerKeyExamList = data["exams"].map<Map<String, String>>((exam) {
@@ -116,7 +121,7 @@ class ExamViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchExamsBySyllabus() async {
-        _setLoading(true);
+    _setLoading(true);
     try {
       var data = await _apiService.getExamsBySyllabus(page, limit);
       syllabusExamList = data["exams"].map<Map<String, String>>((exam) {
@@ -132,9 +137,45 @@ class ExamViewModel extends ChangeNotifier {
     _setLoading(false);
   }
 
+  Future<void> fetchExamsByCertificateVerification() async {
+    _setLoading(true);
+    try {
+      var data =
+          await _apiService.getExamsByCertificateVerification(page, limit);
+      CertificateVerificationExamList =
+          data["exams"].map<Map<String, String>>((exam) {
+        return {
+          "id": exam["_id"].toString(),
+          "name": exam["name"].toString(),
+        };
+      }).toList();
+      totalPages = data["totalPages"];
+    } catch (e) {
+      print("Error fetching exams by CertificateVerification: $e");
+    }
+    _setLoading(false);
+  }
+
+  Future<void> fetchExamsByImportant() async {
+    _setLoading(true);
+    try {
+      var data = await _apiService.getExamsByImportant(page, limit);
+      importantExamList = data["exams"].map<Map<String, String>>((exam) {
+        return {
+          "id": exam["_id"].toString(),
+          "name": exam["name"].toString(),
+        };
+      }).toList();
+      totalPages = data["totalPages"];
+    } catch (e) {
+      print("Error fetching exams by Important: $e");
+    }
+    _setLoading(false);
+  }
+
   // New method to fetch single exam by ID
   Future<void> fetchExamById(String id) async {
-        _setLoading(true);
+    _setLoading(true);
     try {
       var data = await _apiService.getExamById(id);
       selectedExam = data; // Store the exam data

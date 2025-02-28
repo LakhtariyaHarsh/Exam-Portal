@@ -46,7 +46,7 @@ class _MyPageState extends State<MyPage> {
     bool isTablet = screenWidth >= 720 && screenWidth < 1024;
     bool isDesktop = screenWidth >= 1024;
 
-    double buttonWidth =isMobile ? screenWidth * 0.85: screenWidth * 0.25;
+    double buttonWidth = isMobile ? screenWidth * 0.85 : screenWidth * 0.25;
     double buttonHeight = 80;
     double FontSize;
     if (isMobile) {
@@ -263,7 +263,9 @@ class _MyPageState extends State<MyPage> {
                                     child: TextButton(
                                       onPressed: () {
                                         context.go(
-                                            '/details/${Uri.encodeComponent(examViewModel.buttonData[index]['name']!)}');
+                                            '/details/${Uri.encodeComponent(examViewModel.buttonData[index]['name']!)}',
+                                            extra: examViewModel
+                                                .buttonData[index]['id']!);
                                       },
                                       child: Text(
                                         examViewModel.buttonData[index]
@@ -285,7 +287,10 @@ class _MyPageState extends State<MyPage> {
                   Container(
                     width: screenWidth * 0.8,
                     child: Padding(
-                      padding: EdgeInsets.only(top:isMobile? screenWidth * 0.06: screenWidth * 0.02),
+                      padding: EdgeInsets.only(
+                          top: isMobile
+                              ? screenWidth * 0.06
+                              : screenWidth * 0.02),
                       child: Center(
                         child: Wrap(
                           spacing: 20,
@@ -311,6 +316,15 @@ class _MyPageState extends State<MyPage> {
                                 title: "Syllabus",
                                 exams: examViewModel.syllabusExamList,
                                 path: '/syllabus'),
+                            ExamSection(
+                                title: "Certificateverification",
+                                exams: examViewModel
+                                    .CertificateVerificationExamList,
+                                path: '/certificateverification'),
+                            ExamSection(
+                                title: "Important",
+                                exams: examViewModel.importantExamList,
+                                path: '/important'),
                             ExamSection(
                                 title: "Admission",
                                 exams: admissionData
@@ -362,14 +376,16 @@ class ExamSection extends StatelessWidget {
             shrinkWrap: true,
             itemCount: exams.length,
             itemBuilder: (context, index) {
-              String examId = exams[index]["name"] ?? "";
+              String examId = exams[index]["id"] ?? "";
+              String examName = exams[index]["name"] ?? "";
               return ListTile(
                 leading: Icon(Icons.circle, size: 10),
                 title:
                     Text(exams[index]["name"]!, style: TextStyle(fontSize: 14)),
                 onTap: () {
                   if (examId.isNotEmpty) {
-                    context.go('/details/${Uri.encodeComponent(examId)}');
+                    context.go('/details/${Uri.encodeComponent(examName)}',
+                        extra: examId);
                   } else {
                     print("Invalid exam ID");
                   }

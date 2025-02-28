@@ -76,6 +76,18 @@ class ApiService {
         "/exams/lastDateToApply", page, limit, {"sort": "lastDateToApply"});
   }
 
+  // Fetch exams with CertificateVerification available (sorted by CertificateVerification date)
+  Future<Map<String, dynamic>> getExamsByCertificateVerification(int page, int limit) async {
+    return _fetchExams("/exams/certificateVerification", page, limit,
+        {"iscertificateVerificationAvailable": true, "sort": "certificateVerificationAvailable"});
+  }
+
+  // Fetch exams with Important available (sorted by Important date)
+  Future<Map<String, dynamic>> getExamsByImportant(int page, int limit) async {
+    return _fetchExams("/exams/important", page, limit,
+        {"isImportant": true, "sort": "important"});
+  }
+
   // Fetch exams with admit card available (sorted by admitCardAvailable date)
   Future<Map<String, dynamic>> getExamsByAdmitCard(int page, int limit) async {
     return _fetchExams("/exams/admit-card", page, limit,
@@ -125,7 +137,7 @@ Future<Map<String, dynamic>> _fetchExams(String endpoint, int page, int limit,
   // Fetch a single exam by ID
   Future<Map<String, dynamic>> getExamById(String examId) async {
     try {
-      Response response = await _dio.get("/exams/$examId");
+      Response response = await _dio.get("/exams/exambyid/$examId");
       return _handleResponse(response);
     } catch (e) {
       print("Fetch Exam by ID Error: $e");

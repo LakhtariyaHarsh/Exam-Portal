@@ -344,8 +344,8 @@ class _resultpageState extends State<resultpage> {
                                                 : SizedBox();
                                           }
 
-                                          // String examId = examList[index]
-                                          //     ["id"]!; // Extract ID
+                                          String examId = examList[index]
+                                              ["id"]!; // Extract ID
                                           String examName = examList[index]
                                               ["name"]!; // Extract Name
 
@@ -354,7 +354,8 @@ class _resultpageState extends State<resultpage> {
                                               InkWell(
                                                 onTap: () {
                                                   context.go(
-                                                      '/result/details/${Uri.encodeComponent(examName)}');
+                                                      '/result/details/${Uri.encodeComponent(examName)}',
+                                                      extra: examId);
                                                 },
                                                 child: ListTile(
                                                   leading: Icon(Icons.circle,

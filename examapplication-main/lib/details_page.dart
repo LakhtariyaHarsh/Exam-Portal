@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class jobDetails extends StatefulWidget {
   final String examId;
-  const jobDetails({super.key, required this.examId});
+  const jobDetails({super.key, required this.examId, required String examName});
 
   @override
   State<jobDetails> createState() => _jobDetailsState();

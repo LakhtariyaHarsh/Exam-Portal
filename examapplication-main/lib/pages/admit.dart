@@ -347,8 +347,8 @@ class _AdmitPageState extends State<AdmitPage> {
                                                 : SizedBox();
                                           }
 
-                                          // String examId = examList[index]
-                                          //     ["id"]!; // Extract ID
+                                          String examId = examList[index]
+                                              ["id"]!; // Extract ID
                                           String examName = examList[index]
                                               ["name"]!; // Extract Name
 
@@ -357,7 +357,8 @@ class _AdmitPageState extends State<AdmitPage> {
                                               InkWell(
                                                 onTap: () {
                                                   context.go(
-                                                      '/admitcard/examname/${Uri.encodeComponent(examName)}');
+                                                      '/admitcard/examname/${Uri.encodeComponent(examName)}',
+                                                      extra: examId);
                                                 },
                                                 child: ListTile(
                                                   leading: Icon(Icons.circle,

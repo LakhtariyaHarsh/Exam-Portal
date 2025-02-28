@@ -347,8 +347,8 @@ class _SyllabusPageState extends State<SyllabusPage> {
                                                 : SizedBox();
                                           }
 
-                                          // String examId = examList[index]
-                                          //     ["id"]!; // Extract ID
+                                          String examId = examList[index]
+                                              ["id"]!; // Extract ID
                                           String examName = examList[index]
                                               ["name"]!; // Extract Name
 
@@ -357,7 +357,8 @@ class _SyllabusPageState extends State<SyllabusPage> {
                                               InkWell(
                                                 onTap: () {
                                                   context.go(
-                                                      '/syllabus/examname/${Uri.encodeComponent(examName)}');
+                                                      '/syllabus/examname/${Uri.encodeComponent(examName)}',
+                                                      extra: examId);
                                                 },
                                                 child: ListTile(
                                                   leading: Icon(Icons.circle,

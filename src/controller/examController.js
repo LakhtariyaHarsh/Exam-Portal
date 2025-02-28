@@ -186,6 +186,68 @@ exports.getExamsByanswerKey = async (req, res) => {
     }
 };
 
+// Get examlist by certificate verification
+exports.getExamsByCertificateVerification = async (req, res) => {
+    try {
+        // Extract page & limit from query parameters
+        let { page, limit } = req.query;
+        page = parseInt(page) || 1;    // Default page 1
+        limit = parseInt(limit) || 10; // Default limit 10 per page
+        const skip = (page - 1) * limit;
+
+        // Fetch exams where resultAvailable is true, with pagination, sorting, and population
+        const exams = await Exam.find({ iscertificateVerificationAvailable: true })
+            .populate("examCategory postDetails eligibilityCriteria")
+            .sort({ certificateVerificationAvailable: -1 })  // Sort by admitCardAvailable date (earliest first)
+            .skip(skip)
+            .limit(limit);
+
+        // Get total count of exams with result available for frontend pagination
+        const totalExams = await Exam.countDocuments({ iscertificateVerificationAvailable: true });
+
+        res.json({
+            page,
+            limit,
+            totalExams,
+            totalPages: Math.ceil(totalExams / limit),
+            exams
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Get examlist by important
+exports.getExamsByImportant = async (req, res) => {
+    try {
+        // Extract page & limit from query parameters
+        let { page, limit } = req.query;
+        page = parseInt(page) || 1;    // Default page 1
+        limit = parseInt(limit) || 10; // Default limit 10 per page
+        const skip = (page - 1) * limit;
+
+        // Fetch exams where resultAvailable is true, with pagination, sorting, and population
+        const exams = await Exam.find({ isImportant: true })
+            .populate("examCategory postDetails eligibilityCriteria")
+            .sort({ important: -1 })  // Sort by admitCardAvailable date (earliest first)
+            .skip(skip)
+            .limit(limit);
+
+        // Get total count of exams with result available for frontend pagination
+        const totalExams = await Exam.countDocuments({ isImportant: true });
+
+        res.json({
+            page,
+            limit,
+            totalExams,
+            totalPages: Math.ceil(totalExams / limit),
+            exams
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 // Get single exam by ID
 exports.getExamById = async (req, res) => {
     try {

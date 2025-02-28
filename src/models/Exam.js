@@ -19,6 +19,10 @@ const ExamSchema = new mongoose.Schema({
     isanswerKeyAvailable: Boolean,
     answerKeyAvailable: Date,
     answerKeyAvailableEdit: Date,
+    iscertificateVerificationAvailable: Boolean,
+    certificateVerificationAvailable: Date,
+    isImportant: Boolean,
+    important: Date,
     generalCategoryFee: Number,
     obcCategoryFee: Number,
     ewsCategoryFee: Number,
@@ -53,7 +57,9 @@ const ExamSchema = new mongoose.Schema({
     correctionInForm: Boolean,
     correctionInFormLink: String,
     correctiondateInForm: Date,
-    jobPostingDate: Date
+    jobPostingDate: Date,
+    tileName: String,
+    DashboardName: String
 }, { timestamps: true });
 
 module.exports = mongoose.model("Exam", ExamSchema);

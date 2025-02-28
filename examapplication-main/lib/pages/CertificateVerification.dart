@@ -1,18 +1,18 @@
+import 'package:exam_portal/pages/result.dart';
 import 'package:exam_portal/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import '../details_page.dart';
-import 'package:exam_portal/pages/result.dart';
 
-class AnswerKeyPage extends StatefulWidget {
-  AnswerKeyPage({super.key});
+class CertificateVerificationPage extends StatefulWidget {
+  CertificateVerificationPage({super.key});
 
   @override
-  State<AnswerKeyPage> createState() => _AnswerKeyPageState();
+  State<CertificateVerificationPage> createState() => _CertificateVerificationPageState();
 }
 
-class _AnswerKeyPageState extends State<AnswerKeyPage> {
+class _CertificateVerificationPageState extends State<CertificateVerificationPage> {
   final ApiService _apiService = ApiService();
   List<Map<String, String>> examList = []; // Stores fetched exams
   bool isLoading = true;
@@ -41,7 +41,7 @@ class _AnswerKeyPageState extends State<AnswerKeyPage> {
       }
 
       Map<String, dynamic> data =
-          await _apiService.getExamsByAnswerKey(page, limit);
+          await _apiService.getExamsByCertificateVerification(page, limit);
 
       setState(() {
         // Store exams as a list of maps (id & name)
@@ -306,7 +306,7 @@ class _AnswerKeyPageState extends State<AnswerKeyPage> {
                                   color: const Color(0xffaa183d),
                                   child: Center(
                                     child: Text(
-                                      "Answer Keys 2024",
+                                      "Certificate Verification Exams",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontSize: fontSize * 1.5,
@@ -357,7 +357,7 @@ class _AnswerKeyPageState extends State<AnswerKeyPage> {
                                               InkWell(
                                                 onTap: () {
                                                   context.go(
-                                                      '/answerkey/examname/${Uri.encodeComponent(examName)}',
+                                                      '/certificateverificationexam/examname/${Uri.encodeComponent(examName)}',
                                                       extra: examId);
                                                 },
                                                 child: ListTile(

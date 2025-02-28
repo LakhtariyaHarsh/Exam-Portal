@@ -348,8 +348,8 @@ class _LatestJobPageState extends State<LatestJobPage> {
                                                 : SizedBox();
                                           }
 
-                                          // String examId = examList[index]
-                                          //     ["id"]!; // Extract ID
+                                          String examId = examList[index]
+                                              ["id"]!; // Extract ID
                                           String examName = examList[index]
                                               ["name"]!; // Extract Name
 
@@ -358,7 +358,8 @@ class _LatestJobPageState extends State<LatestJobPage> {
                                               InkWell(
                                                 onTap: () {
                                                   context.go(
-                                                      '/latestjob/examname/${Uri.encodeComponent(examName)}');
+                                                      '/latestjob/examname/${Uri.encodeComponent(examName)}',
+                                                      extra: examId);
                                                 },
                                                 child: ListTile(
                                                   leading: Icon(Icons.circle,

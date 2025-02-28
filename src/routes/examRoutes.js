@@ -11,6 +11,8 @@ router.get("/admit-card", examController.getExamsByAdmitCard);
 router.get("/result", examController.getExamsByResult);
 router.get("/answerkey", examController.getExamsByanswerKey);
 router.get("/syllabus", examController.getExamsBysyllabus);
+router.get("/certificateVerification", examController.getExamsByCertificateVerification);
+router.get("/important", examController.getExamsByImportant);
 router.get("/exambyid/:id", examController.getExamById);
 
 // Place the searchByName route before the getExamByName route
