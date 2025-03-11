@@ -12,7 +12,7 @@ exports.getExams = async (req, res) => {
         // Fetch exams with pagination, populate references, and sort by createdAt in descending order
         const exams = await Exam.find()
             .populate("examCategory postDetails eligibilityCriteria")
-            .sort({ createdAt: -1 })  // Sort by createdAt (newest first)
+            .sort({ jobPostingDate: -1 })  // Sort by jobPostingDate (newest first)
             .skip(skip)
             .limit(limit);
 
